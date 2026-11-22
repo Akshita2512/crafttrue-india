@@ -4,6 +4,15 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type UserRole = 'consumer' | 'artisan';
 
+export interface AuthUser {
+  id: string;
+  fullName: string;
+  role: UserRole;
+  phone?: string;
+  email?: string;
+  isLoggedIn: boolean;
+}
+
 export interface ArtisanProfile {
   id: string;
   name: string;
@@ -57,8 +66,12 @@ interface RoleContextType {
   role: UserRole;
   artisanKey: 'lalchand' | 'brijballabh';
   activeArtisan: ArtisanProfile;
+  currentUser: AuthUser | null;
   setRole: (role: UserRole) => void;
   loginAsArtisan: (artisanKey: 'lalchand' | 'brijballabh') => void;
+  loginWithPhoneOtp: (phone: string, otp: string, name?: string) => { success: boolean; message?: string };
+  loginWithEmail: (email: string, password?: string) => { success: boolean; message?: string };
+  logout: () => void;
   logoutToConsumer: () => void;
 }
 
@@ -67,17 +80,27 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 export function RoleProvider({ children }: { children: React.ReactNode }) {
   const [role, setRoleState] = useState<UserRole>('consumer');
   const [artisanKey, setArtisanKey] = useState<'lalchand' | 'brijballabh'>('lalchand');
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
   // Load from localStorage on client mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedRole = localStorage.getItem('crafttrue_user_role') as UserRole;
       const savedArtisan = localStorage.getItem('crafttrue_artisan_key') as 'lalchand' | 'brijballabh';
+      const savedUser = localStorage.getItem('crafttrue_current_user');
+
       if (savedRole === 'consumer' || savedRole === 'artisan') {
         setRoleState(savedRole);
       }
       if (savedArtisan && DEMO_ARTISAN_PROFILES[savedArtisan]) {
         setArtisanKey(savedArtisan);
+      }
+      if (savedUser) {
+        try {
+          setCurrentUser(JSON.parse(savedUser));
+        } catch {
+          // ignore corrupted json
+        }
       }
     }
   }, []);
@@ -92,9 +115,70 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   const loginAsArtisan = (key: 'lalchand' | 'brijballabh') => {
     setArtisanKey(key);
     setRoleState('artisan');
+    const profile = DEMO_ARTISAN_PROFILES[key];
+    const user: AuthUser = {
+      id: profile.id,
+      fullName: profile.name,
+      role: 'artisan',
+      isLoggedIn: true
+    };
+    setCurrentUser(user);
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('crafttrue_user_role', 'artisan');
       localStorage.setItem('crafttrue_artisan_key', key);
+      localStorage.setItem('crafttrue_current_user', JSON.stringify(user));
+    }
+  };
+
+  const loginWithPhoneOtp = (phone: string, otp: string, name?: string) => {
+    const cleanOtp = otp.trim();
+    // Valid demo OTPs: 4821 or 1234 or any 4/6-digit code
+    if (cleanOtp === '4821' || cleanOtp === '1234' || cleanOtp.length === 4 || cleanOtp.length === 6) {
+      const cleanPhone = phone.startsWith('+91') ? phone : `+91 ${phone.trim()}`;
+      const user: AuthUser = {
+        id: `usr-${Date.now().toString().slice(-6)}`,
+        fullName: name || 'Handloom Patron',
+        phone: cleanPhone,
+        role: 'consumer',
+        isLoggedIn: true
+      };
+      setCurrentUser(user);
+      setRoleState('consumer');
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('crafttrue_user_role', 'consumer');
+        localStorage.setItem('crafttrue_current_user', JSON.stringify(user));
+      }
+      return { success: true };
+    }
+    return { success: false, message: 'Invalid OTP code. Please use Demo OTP: 4821 (or 1234)' };
+  };
+
+  const loginWithEmail = (email: string, password?: string) => {
+    const user: AuthUser = {
+      id: `usr-${Date.now().toString().slice(-6)}`,
+      fullName: email.split('@')[0] || 'Conscious Buyer',
+      email: email.trim(),
+      role: 'consumer',
+      isLoggedIn: true
+    };
+    setCurrentUser(user);
+    setRoleState('consumer');
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('crafttrue_user_role', 'consumer');
+      localStorage.setItem('crafttrue_current_user', JSON.stringify(user));
+    }
+    return { success: true };
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    setRoleState('consumer');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('crafttrue_current_user');
+      localStorage.setItem('crafttrue_user_role', 'consumer');
     }
   };
 
@@ -113,8 +197,12 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         role,
         artisanKey,
         activeArtisan,
+        currentUser,
         setRole,
         loginAsArtisan,
+        loginWithPhoneOtp,
+        loginWithEmail,
+        logout,
         logoutToConsumer
       }}
     >

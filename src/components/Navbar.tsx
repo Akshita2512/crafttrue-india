@@ -16,13 +16,16 @@ import {
   Award, 
   BookOpenCheck,
   Search,
-  ExternalLink
+  ExternalLink,
+  LogIn,
+  LogOut,
+  User
 } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { role, activeArtisan, setRole, loginAsArtisan, logoutToConsumer } = useUserRole();
+  const { role, activeArtisan, currentUser, setRole, loginAsArtisan, logoutToConsumer, logout } = useUserRole();
 
   const primaryNavLinks = [
     { href: '/products', label: 'Craft Catalog', icon: ShoppingBag, badge: 'GI Textiles' },
@@ -116,29 +119,65 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Role Switcher */}
-          <div className="hidden lg:flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl border border-stone-200 text-xs shrink-0">
-            <span className="text-[10px] text-stone-500 font-bold px-1.5 uppercase">Role:</span>
-            <button
-              onClick={() => logoutToConsumer()}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
-                role === 'consumer'
-                  ? 'bg-white text-stone-900 shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Consumer
-            </button>
-            <button
-              onClick={() => loginAsArtisan('lalchand')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
-                role === 'artisan'
-                  ? 'bg-amber-800 text-white shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Artisan {role === 'artisan' && `(${activeArtisan.cluster})`}
-            </button>
+          {/* Role Switcher & Auth */}
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
+            {/* Quick Demo Role Switcher */}
+            <div className="flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl border border-stone-200 text-xs">
+              <span className="text-[10px] text-stone-500 font-bold px-1.5 uppercase">Role:</span>
+              <button
+                onClick={() => logoutToConsumer()}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                  role === 'consumer'
+                    ? 'bg-white text-stone-900 shadow-xs font-bold'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Consumer
+              </button>
+              <button
+                onClick={() => loginAsArtisan('lalchand')}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                  role === 'artisan'
+                    ? 'bg-amber-800 text-white shadow-xs font-bold'
+                    : 'text-stone-600 hover:text-stone-900'
+                }`}
+              >
+                Artisan {role === 'artisan' && `(${activeArtisan.cluster})`}
+              </button>
+            </div>
+
+            {/* Auth State Button */}
+            {currentUser?.isLoggedIn ? (
+              <div className="flex items-center gap-2 pl-1 border-l border-stone-200">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200 text-xs">
+                  <div className="w-5 h-5 rounded-full bg-amber-800 text-amber-100 flex items-center justify-center text-[10px] font-bold">
+                    {currentUser.fullName.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="font-semibold text-stone-900 max-w-[110px] truncate text-[11px]">
+                    {currentUser.fullName}
+                  </span>
+                  <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 font-bold">
+                    {currentUser.role}
+                  </span>
+                </div>
+                <button
+                  onClick={() => logout()}
+                  title="Sign Out"
+                  className="p-1.5 rounded-lg text-stone-400 hover:text-red-700 hover:bg-red-50 transition"
+                  aria-label="Sign Out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-bold transition shadow-xs border border-stone-800"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Sign In / Demo OTP</span>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -195,12 +234,75 @@ export function Navbar() {
             })}
           </div>
 
-          <div className="pt-3 border-t border-stone-200 flex items-center justify-between text-xs text-stone-600 px-2">
-            <span>Demo Mode Role:</span>
-            <div className="flex gap-1">
-              <span className="px-2 py-1 bg-amber-100 text-amber-950 font-bold rounded">Consumer</span>
-              <span className="px-2 py-1 bg-stone-100 text-stone-600 rounded">Artisan</span>
-              <span className="px-2 py-1 bg-stone-100 text-stone-600 rounded">Verifier</span>
+          {/* Mobile Auth Status */}
+          <div className="pt-3 border-t border-stone-200 text-xs px-2 space-y-3">
+            {currentUser?.isLoggedIn ? (
+              <div className="flex items-center justify-between w-full bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full bg-amber-800 text-amber-100 flex items-center justify-center font-bold text-xs">
+                    {currentUser.fullName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="font-bold text-stone-900">{currentUser.fullName}</div>
+                    <div className="text-[10px] text-amber-800 uppercase font-semibold tracking-wide">
+                      {currentUser.role} Account
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-white border border-stone-200 hover:bg-stone-50 text-stone-700 font-semibold text-[11px] flex items-center gap-1 shadow-xs"
+                >
+                  <LogOut className="w-3.5 h-3.5 text-stone-500" />
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between w-full bg-stone-50 p-2.5 rounded-xl border border-stone-200">
+                <div>
+                  <div className="font-semibold text-stone-800">Consumer / Artisan</div>
+                  <div className="text-[10px] text-stone-500">Sign in with Mobile OTP</div>
+                </div>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-lg font-bold text-xs flex items-center gap-1.5 shadow-xs"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  Sign In (OTP Demo)
+                </Link>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between text-stone-500 pt-1">
+              <span>Quick Role Switch:</span>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => {
+                    logoutToConsumer();
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`px-2 py-1 rounded text-[11px] font-semibold ${
+                    role === 'consumer' ? 'bg-amber-200 text-amber-950' : 'bg-stone-100 text-stone-600'
+                  }`}
+                >
+                  Consumer
+                </button>
+                <button
+                  onClick={() => {
+                    loginAsArtisan('lalchand');
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`px-2 py-1 rounded text-[11px] font-semibold ${
+                    role === 'artisan' ? 'bg-amber-800 text-white' : 'bg-stone-100 text-stone-600'
+                  }`}
+                >
+                  Artisan Studio
+                </button>
+              </div>
             </div>
           </div>
         </div>
