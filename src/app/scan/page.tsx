@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { QrCode, Search, Camera, CheckCircle2, AlertTriangle, XCircle, ArrowRight, ShieldAlert, Sparkles } from 'lucide-react';
+import { QrCode, Search, Camera, CheckCircle2, AlertTriangle, XCircle, ArrowRight, ShieldAlert, Sparkles, BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ScanPage() {
@@ -29,35 +29,35 @@ export default function ScanPage() {
     setTimeout(() => {
       setIsScanning(false);
       setCameraActive(false);
-      router.push('/verify/CTI-BAG-000184');
-    }, 2200);
+      router.push('/verify/BAGRU-LCD-F001');
+    }, 2000);
   };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
       {/* Page Header */}
       <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold">
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
           <QrCode className="w-3.5 h-3.5" />
-          <span>Consumer Authenticity Scanner • उपभोक्ता सत्यापन</span>
+          <span>Consumer Authenticity Scanner • उपभोक्ता सत्यापन केंद्र</span>
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
           Scan or Enter Product Tag ID
         </h1>
         <p className="text-sm text-stone-600 max-w-lg mx-auto">
-          Scan the physical QR label attached to your Bagru or Sanganeri textile to verify its geographical origin, block-printing technique, artisan identity, and GI evidence.
+          Scan the physical QR label attached to your <strong>Bagru (GI No. 183)</strong> or <strong>Sanganeri (GI No. 147)</strong> textile to verify its geographical origin, wooden block printing technique, master artisan lineage, and GI evidence.
         </p>
       </div>
 
       {/* Main Scanner Card */}
-      <div className="bg-white rounded-2xl border-2 border-stone-200 shadow-lg p-6 sm:p-8 space-y-6">
+      <div className="bg-white rounded-3xl border-2 border-stone-200 shadow-xl p-6 sm:p-8 space-y-6">
         {/* Scanner Viewport Simulation */}
-        <div className="relative rounded-xl overflow-hidden bg-stone-950 aspect-16/10 sm:aspect-21/9 flex flex-col items-center justify-center p-6 text-white border-2 border-dashed border-amber-600/50">
+        <div className="relative rounded-2xl overflow-hidden bg-stone-950 aspect-16/10 sm:aspect-21/9 flex flex-col items-center justify-center p-6 text-white border-2 border-dashed border-amber-600/50">
           {cameraActive ? (
             <div className="text-center space-y-4 animate-pulse">
               <div className="w-16 h-16 rounded-full border-4 border-amber-400 border-t-transparent animate-spin mx-auto" />
               <p className="font-mono text-sm text-amber-300 font-medium">Scanning optical QR label...</p>
-              <p className="text-xs text-stone-400">Targeting Bagru Chhipa Authenticity Tag</p>
+              <p className="text-xs text-stone-400">Targeting Master Lalchand Derawala Bagru Authenticity Tag</p>
             </div>
           ) : (
             <div className="text-center space-y-4">
@@ -65,16 +65,16 @@ export default function ScanPage() {
                 <Camera className="w-8 h-8" />
               </div>
               <div className="space-y-1">
-                <p className="font-semibold text-base">Point Camera at Physical Tag</p>
-                <p className="text-xs text-stone-400">Supports standard mobile camera &amp; high-res QR tags</p>
+                <p className="font-semibold text-base">Point Camera at Physical QR Tag</p>
+                <p className="text-xs text-stone-400">Works with smartphone camera or high-res swing tag</p>
               </div>
               <button
                 type="button"
                 onClick={triggerSimulatedScan}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs shadow-md transition"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition"
               >
                 <Camera className="w-4 h-4" />
-                <span>Simulate Camera Scan (Sample Bagru Tag)</span>
+                <span>Simulate Camera Scan (Bagru Master Tag)</span>
               </button>
             </div>
           )}
@@ -102,13 +102,13 @@ export default function ScanPage() {
               type="text"
               value={productCodeInput}
               onChange={(e) => setProductCodeInput(e.target.value)}
-              placeholder="e.g. CTI-BAG-000184"
-              className="w-full pl-10 pr-4 py-3 bg-stone-50 border border-stone-300 rounded-xl text-sm font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-600 focus:bg-white"
+              placeholder="e.g. BAGRU-LCD-F001 or SGR-BBU-F001"
+              className="w-full pl-10 pr-4 py-3 bg-stone-50 border border-stone-300 rounded-xl text-sm font-mono uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-amber-700/40 focus:bg-white"
             />
           </div>
           <button
             type="submit"
-            className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-medium text-sm transition flex items-center justify-center gap-2 shadow-sm"
+            className="px-6 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm"
           >
             <span>Verify Tag</span>
             <ArrowRight className="w-4 h-4" />
@@ -116,98 +116,106 @@ export default function ScanPage() {
         </form>
       </div>
 
-      {/* 4 DEMO TEST SCENARIOS (Designed for Supervisor / Examiner Presentations) */}
+      {/* 4 DEMO TEST SCENARIOS */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-amber-600" />
+            <Sparkles className="w-4 h-4 text-amber-700" />
             <h3 className="font-serif font-bold text-lg text-stone-900">
               Interactive Ph.D. Evaluation Presets
             </h3>
           </div>
-          <span className="text-xs text-stone-500 font-medium">Click any scenario to test the 7-Layer Scorecard</span>
+          <Link
+            href="/authenticity-guide"
+            className="text-xs font-bold text-amber-800 hover:text-amber-900 flex items-center gap-1"
+          >
+            <BookOpenCheck className="w-3.5 h-3.5" />
+            <span>Open 5-Point Buyer Field Guide</span>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
           {/* Preset A: Fully Verified Bagru */}
           <button
-            onClick={() => handlePresetSelect('CTI-BAG-000184')}
-            className="text-left p-4 rounded-xl border border-emerald-200 bg-emerald-50/60 hover:bg-emerald-100/70 transition space-y-2 group"
+            onClick={() => handlePresetSelect('BAGRU-LCD-F001')}
+            className="text-left p-5 rounded-2xl border border-emerald-300 bg-emerald-50/60 hover:bg-emerald-100/70 transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-600 text-white flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-700 text-white flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" />
-                VERIFIED (सत्यापित)
+                VERIFIED SPECIMEN
               </span>
-              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-emerald-800">
-                CTI-BAG-000184 →
+              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-emerald-900">
+                BAGRU-LCD-F001 →
               </span>
             </div>
-            <h4 className="font-bold text-sm text-stone-900">Authentic Bagru Dabu Indigo Dupatta</h4>
+            <h4 className="font-bold text-sm text-stone-900">Bagru Classic Fadat Hand-Block Dupatta</h4>
             <p className="text-xs text-stone-600">
-              Demonstrates complete 7-layer verification: Traditional Chhipa workshop, Dabu mud resist, natural indigo, and valid GI authorized user.
+              Lalchand &apos;Chippa&apos; Derawala (National Award 1999). Seasoned Rorda wooden blocks, Harda cream ground, natural syahi &amp; madder red.
             </p>
           </button>
 
-          {/* Preset B: Partially Verified Sanganer */}
+          {/* Preset B: Fully Verified Sanganer */}
           <button
-            onClick={() => handlePresetSelect('CTI-SAN-000291')}
-            className="text-left p-4 rounded-xl border border-amber-200 bg-amber-50/60 hover:bg-amber-100/70 transition space-y-2 group"
+            onClick={() => handlePresetSelect('SGR-BBU-F001')}
+            className="text-left p-5 rounded-2xl border border-sky-300 bg-sky-50/60 hover:bg-sky-100/70 transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-600 text-white flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-700 text-white flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" />
-                PARTIALLY VERIFIED (आंशिक)
+                VERIFIED SPECIMEN
               </span>
-              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-amber-800">
-                CTI-SAN-000291 →
+              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-sky-900">
+                SGR-BBU-F001 →
               </span>
             </div>
-            <h4 className="font-bold text-sm text-stone-900">Sanganeri Floral Fine Mulmul Kurta Fabric</h4>
+            <h4 className="font-bold text-sm text-stone-900">Sanganeri Fine Floral Hand-Block Mulmul Saree</h4>
             <p className="text-xs text-stone-600">
-              Demonstrates nuanced evaluation: Origin &amp; hand-block printing verified, but transparently discloses mill-made fabric &amp; pigment dyes.
+              Brij Ballabh Udaiwal (National Award 1991, Pehchan ID NRJPC241207). Fine boota &amp; bootie on pristine white river-washed cotton mulmul.
             </p>
           </button>
 
-          {/* Preset C: Confirmed Craftwashing / Misrepresentation */}
+          {/* Preset C: Confirmed Craftwashing Misrepresentation */}
           <button
             onClick={() => handlePresetSelect('CTI-MIS-000305')}
-            className="text-left p-4 rounded-xl border border-rose-200 bg-rose-50/60 hover:bg-rose-100/70 transition space-y-2 group"
+            className="text-left p-5 rounded-2xl border border-rose-300 bg-rose-50/60 hover:bg-rose-100/70 transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-600 text-white flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-700 text-white flex items-center gap-1">
                 <XCircle className="w-3 h-3" />
-                CRAFTWASHING / FALSE CLAIM
+                CRAFTWASHING DETECTED
               </span>
-              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-rose-800">
+              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-rose-900">
                 CTI-MIS-000305 →
               </span>
             </div>
-            <h4 className="font-bold text-sm text-stone-900">Jaipur Exhibition Stole (Screen Print)</h4>
+            <h4 className="font-bold text-sm text-stone-900">Industrial Screen Print Sold as &quot;Bagru Dabu&quot;</h4>
             <p className="text-xs text-stone-600">
-              Demonstrates consumer protection: Sold as "ancestral handmade Bagru", but audit reveals mechanical rotary screen print on poly-blend with synthetic dyes.
+              Commercial fraud detection: Flatbed rotary screen print using acrylic pigments, zero reverse strike-through, 300% markup on poly-cotton.
             </p>
           </button>
 
-          {/* Preset D: Copied QR Anomaly Alert */}
+          {/* Preset D: Cloned QR Anomaly Alert */}
           <button
             onClick={() => handlePresetSelect('CTI-DUP-000412')}
-            className="text-left p-4 rounded-xl border border-orange-200 bg-orange-50/60 hover:bg-orange-100/70 transition space-y-2 group"
+            className="text-left p-5 rounded-2xl border border-orange-300 bg-orange-50/60 hover:bg-orange-100/70 transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-orange-600 text-white flex items-center gap-1">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-700 text-white flex items-center gap-1">
                 <ShieldAlert className="w-3 h-3" />
-                DUPLICATE QR ALERT
+                SECURITY DUPLICATION ALERT
               </span>
-              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-orange-800">
+              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-orange-900">
                 CTI-DUP-000412 →
               </span>
             </div>
-            <h4 className="font-bold text-sm text-stone-900">Bagru Runner (Photocopied Tag Anomaly)</h4>
+            <h4 className="font-bold text-sm text-stone-900">Cloned QR Swing Tag Anomaly</h4>
             <p className="text-xs text-stone-600">
-              Demonstrates anti-duplication security: Triggers security flag when 28 scans occur across distant cities simultaneously.
+              Anti-duplication security: Triggers audit quarantine when identical QR tag ID is scanned across Bengaluru, Delhi, and Jaipur within 15 minutes.
             </p>
           </button>
+
         </div>
       </div>
     </div>
