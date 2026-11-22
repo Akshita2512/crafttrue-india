@@ -25,10 +25,17 @@ export default function ScanPage() {
   const triggerSimulatedScan = () => {
     setIsScanning(true);
     setCameraActive(true);
+    // Mobile tactile feedback
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(40);
+    }
     // Simulate optical camera scan delay
     setTimeout(() => {
       setIsScanning(false);
       setCameraActive(false);
+      if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate([60, 40, 80]);
+      }
       router.push('/verify/BAGRU-LCD-F001');
     }, 2000);
   };
