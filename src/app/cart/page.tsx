@@ -102,7 +102,7 @@ export default function CartPage() {
               >
                 <div className="flex items-center gap-4 w-full sm:w-auto">
                   <img
-                    src={product.images[0]}
+                    src={product.images?.[0] || (product as any).image_url || 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=600&q=80'}
                     alt={product.title}
                     className="w-20 h-20 rounded-lg object-cover bg-amber-50"
                   />
