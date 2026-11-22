@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useUserRole } from '@/context/RoleContext';
 import { 
   QrCode, 
   ShieldCheck, 
@@ -21,14 +22,19 @@ import {
 export function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeRole, setActiveRole] = useState<'consumer' | 'artisan' | 'verifier'>('consumer');
+  const { role, activeArtisan, setRole, loginAsArtisan, logoutToConsumer } = useUserRole();
 
   const primaryNavLinks = [
     { href: '/products', label: 'Craft Catalog', icon: ShoppingBag, badge: 'GI Textiles' },
     { href: '/scan', label: 'Scan & Verify', icon: QrCode, badge: 'Live Scanner' },
     { href: '/authenticity-guide', label: 'Authenticity Guide', icon: BookOpenCheck, badge: 'Field Tests', highlight: true },
     { href: '/artisans', label: 'Master Artisans', icon: Award, badge: 'Chhipa Masters' },
-    { href: '/artisan/register-product', label: 'Artisan Portal', icon: UserCheck, badge: 'Tag Generator' },
+    { 
+      href: '/artisan', 
+      label: role === 'artisan' ? 'Artisan Studio' : 'Artisan Portal', 
+      icon: UserCheck, 
+      badge: role === 'artisan' ? activeArtisan.cluster : 'Demo Access' 
+    },
     { href: '/admin', label: 'Verifier Desk', icon: ShieldCheck, badge: 'AEF Audit' },
     { href: '/research', label: 'Craft Intelligence', icon: BarChart3, badge: 'Lab Data' },
   ];
@@ -110,13 +116,13 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Persona Switcher */}
+          {/* Role Switcher */}
           <div className="hidden lg:flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl border border-stone-200 text-xs shrink-0">
             <span className="text-[10px] text-stone-500 font-bold px-1.5 uppercase">Role:</span>
             <button
-              onClick={() => setActiveRole('consumer')}
-              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition ${
-                activeRole === 'consumer'
+              onClick={() => logoutToConsumer()}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                role === 'consumer'
                   ? 'bg-white text-stone-900 shadow-xs font-bold'
                   : 'text-stone-600 hover:text-stone-900'
               }`}
@@ -124,24 +130,14 @@ export function Navbar() {
               Consumer
             </button>
             <button
-              onClick={() => setActiveRole('artisan')}
-              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition ${
-                activeRole === 'artisan'
+              onClick={() => loginAsArtisan('lalchand')}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
+                role === 'artisan'
                   ? 'bg-amber-800 text-white shadow-xs font-bold'
                   : 'text-stone-600 hover:text-stone-900'
               }`}
             >
-              Artisan
-            </button>
-            <button
-              onClick={() => setActiveRole('verifier')}
-              className={`px-2 py-1 rounded-lg text-[11px] font-medium transition ${
-                activeRole === 'verifier'
-                  ? 'bg-stone-900 text-amber-300 shadow-xs font-bold'
-                  : 'text-stone-600 hover:text-stone-900'
-              }`}
-            >
-              Verifier
+              Artisan {role === 'artisan' && `(${activeArtisan.cluster})`}
             </button>
           </div>
 

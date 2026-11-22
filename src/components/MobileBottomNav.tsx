@@ -3,10 +3,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShoppingBag, BookOpenCheck, QrCode, Award, ShieldCheck } from 'lucide-react';
+import { useUserRole } from '@/context/RoleContext';
+import { ShoppingBag, BookOpenCheck, QrCode, Award, ShieldCheck, UserCheck } from 'lucide-react';
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const { role } = useUserRole();
 
   const navItems = [
     {
@@ -25,11 +27,17 @@ export function MobileBottomNav() {
       icon: QrCode,
       isCenter: true,
     },
-    {
-      href: '/artisans',
-      label: 'Artisans',
-      icon: Award,
-    },
+    role === 'artisan'
+      ? {
+          href: '/artisan',
+          label: 'My Studio',
+          icon: UserCheck,
+        }
+      : {
+          href: '/artisans',
+          label: 'Artisans',
+          icon: Award,
+        },
     {
       href: '/admin',
       label: 'Verifier',

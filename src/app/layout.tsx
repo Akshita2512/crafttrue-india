@@ -5,6 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
+import { RoleProvider } from '@/context/RoleContext';
 
 // Configure Luxury Artisanal Fonts
 const playfair = Playfair_Display({
@@ -43,11 +44,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${jakarta.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col antialiased bg-[#FAF8F5] text-stone-900 font-sans pb-16 md:pb-0">
-        <ServiceWorkerRegistration />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <MobileBottomNav />
+        <RoleProvider>
+          <ServiceWorkerRegistration />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <MobileBottomNav />
+        </RoleProvider>
       </body>
     </html>
   );
