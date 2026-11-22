@@ -15,23 +15,28 @@ import {
   FileText,
   UserCheck,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  ShoppingBag,
+  BookOpenCheck,
+  Eye,
+  HeartHandshake
 } from 'lucide-react';
 import { DEMO_PRODUCTS } from '@/lib/data/craftData';
 
 export default function HomePage() {
   return (
     <div className="space-y-16 pb-16">
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-amber-50/70 via-white to-[#FAF7F2] pt-12 pb-20 border-b border-amber-900/10">
+      
+      {/* 1. HERO SECTION - AUTHENTIC HANDLOOM & HANDICRAFT AESTHETIC */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-amber-50/80 via-white to-[#FAF7F2] pt-10 pb-20 border-b border-amber-900/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
             {/* Left Copy */}
             <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-950 text-xs font-bold border border-amber-200">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-950 text-xs font-bold border border-amber-300">
                 <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                <span>Ph.D. Research Initiative • Combating Craftwashing in Rajasthan</span>
+                <span>Ph.D. Research Initiative • Combating Craftwashing in Rajasthan GI Clusters</span>
               </div>
 
               <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight leading-[1.15]">
@@ -41,8 +46,8 @@ export default function HomePage() {
                 </span>
               </h1>
 
-              <p className="text-stone-600 text-base sm:text-lg leading-relaxed max-w-2xl">
-                Discover the maker, cluster origin, printing technique, and documented evidence behind every registered <strong>Bagru</strong> and <strong>Sanganeri</strong> textile.
+              <p className="text-stone-700 text-base sm:text-lg leading-relaxed max-w-2xl">
+                India’s first QR-based authenticity and traceability platform for <strong>Bagru Hand Block Print (GI No. 183)</strong> and <strong>Sanganeri Hand Block Printing (GI No. 147)</strong>. Discover the generational Chhipa maker, natural dye recipes, and documented physical evidence behind every genuine textile.
               </p>
 
               {/* Action Buttons */}
@@ -57,19 +62,19 @@ export default function HomePage() {
                 </Link>
 
                 <Link
-                  href="/artisan/register-product"
-                  className="bg-white hover:bg-amber-50 border border-stone-300 text-stone-800 px-6 py-3.5 rounded-xl font-semibold text-sm shadow-xs transition flex items-center gap-2"
+                  href="/authenticity-guide"
+                  className="bg-amber-100 hover:bg-amber-200 border border-amber-300 text-amber-950 px-6 py-3.5 rounded-xl font-bold text-sm shadow-xs transition flex items-center gap-2"
                 >
-                  <UserCheck className="w-4 h-4 text-amber-700" />
-                  <span>Artisan Portal &amp; Tag Generator</span>
+                  <BookOpenCheck className="w-4 h-4 text-amber-800" />
+                  <span>Buyer Authenticity Guide</span>
                 </Link>
 
                 <Link
-                  href="/research"
-                  className="bg-stone-100 hover:bg-stone-200 text-stone-700 px-5 py-3.5 rounded-xl font-semibold text-xs transition flex items-center gap-2"
+                  href="/products"
+                  className="bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 px-5 py-3.5 rounded-xl font-semibold text-xs shadow-xs transition flex items-center gap-2"
                 >
-                  <BarChart3 className="w-4 h-4 text-stone-600" />
-                  <span>Ph.D. Analytics</span>
+                  <ShoppingBag className="w-4 h-4 text-stone-600" />
+                  <span>Browse GI Catalog</span>
                 </Link>
               </div>
 
@@ -80,8 +85,8 @@ export default function HomePage() {
                   <p className="text-stone-500 font-medium">Evidence Framework</p>
                 </div>
                 <div>
-                  <p className="font-serif text-2xl font-bold text-amber-800">5 States</p>
-                  <p className="text-stone-500 font-medium">Nuanced Statuses</p>
+                  <p className="font-serif text-2xl font-bold text-amber-800">40 Fabrics</p>
+                  <p className="text-stone-500 font-medium">Empirical Research</p>
                 </div>
                 <div>
                   <p className="font-serif text-2xl font-bold text-stone-900">2 Clusters</p>
@@ -90,17 +95,18 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Visual Card */}
+            {/* Right Visual Card - Authentic Hand Block Printing Imagery */}
             <div className="lg:col-span-5 relative">
-              <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-xl space-y-4">
-                <div className="relative rounded-2xl overflow-hidden aspect-4/3 bg-stone-100">
+              <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-xl space-y-4">
+                <div className="relative rounded-2xl overflow-hidden aspect-4/3 bg-stone-100 border border-amber-100">
                   <img
-                    src="https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?auto=format&fit=crop&w=800&q=80"
-                    alt="Authentic Bagru Dabu Mud-Resist Block Printing"
+                    src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=800&q=80"
+                    alt="Authentic Bagru Fadat Hand Block Printing on Harda-Mordanted Cotton"
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute top-3 left-3 bg-stone-900/80 backdrop-blur-xs text-white text-[11px] font-semibold px-2.5 py-1 rounded-md">
-                    Bagru Cluster • GI Registered
+                  <div className="absolute top-3 left-3 bg-amber-950/85 backdrop-blur-xs text-amber-200 text-[11px] font-bold px-3 py-1 rounded-md border border-amber-700/50 flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Bagru Cluster • GI No. 183</span>
                   </div>
                 </div>
 
@@ -108,74 +114,202 @@ export default function HomePage() {
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" />
-                      VERIFIED SPECIMEN
+                      VERIFIED MASTERWORK
                     </span>
-                    <span className="font-mono text-xs text-stone-500 font-bold">
-                      CTI-BAG-000184
+                    <span className="font-mono text-xs text-amber-900 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                      BAGRU-LCD-F001
                     </span>
                   </div>
                   <h3 className="font-serif font-bold text-base text-stone-900">
-                    Bagru Dabu Mud-Resist Indigo Cotton Dupatta
+                    Bagru Classic Fadat Hand-Block Cotton Dupatta
                   </h3>
-                  <p className="text-xs text-stone-500 leading-relaxed">
-                    By Mohan Lal Chhipa (5th-Gen Master Printer). 6-step indigo vat immersion, Dabu mud resist, and verifiable batch custody records.
+                  <p className="text-xs text-stone-600 leading-relaxed">
+                    By <strong>Lalchand &apos;Chippa&apos; Derawala</strong> (National Awardee 1999). Hand-printed with seasoned Rorda wooden blocks using natural iron-jaggery syahi and alum-madder red on warm cream Harda base.
                   </p>
                 </div>
 
+                <div className="pt-2 flex items-center gap-2">
+                  <Link
+                    href="/verify/BAGRU-LCD-F001"
+                    className="flex-1 py-2.5 bg-amber-900 hover:bg-amber-950 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-sm"
+                  >
+                    <span>Inspect 7-Layer Scorecard</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+
+                  <Link
+                    href="/authenticity-guide"
+                    className="px-3 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold flex items-center gap-1 transition"
+                    title="How to verify this sample in hand"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Field Guide</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 2. THE 2 GI CLUSTERS: BAGRU VS SANGANER */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-amber-800 bg-amber-100 px-3 py-1 rounded-full">
+            Cluster Heritage Spotlight
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
+            Two Distinct Rajasthani GI Traditions
+          </h2>
+          <p className="text-stone-600 text-sm">
+            Bagru and Sanganer are geographically adjacent clusters in Jaipur district, yet each holds distinct Geographical Indication specifications, chemical recipes, and design vocabularies.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* Cluster 1: Bagru */}
+          <div className="bg-gradient-to-br from-[#FDF8F0] to-white rounded-3xl p-8 border-2 border-amber-200/90 shadow-sm space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">GI Application No. 183</span>
+                <h3 className="font-serif text-2xl font-bold text-stone-900 mt-1">Bagru Hand Block Print</h3>
+                <p className="text-xs text-stone-500">Registered: 11 May 2011 • Jaipur District</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center font-serif text-xl font-bold text-amber-900 border border-amber-300">
+                बागरू
+              </div>
+            </div>
+
+            <p className="text-stone-600 text-xs leading-relaxed">
+              Renowned for <strong>Dabu mud-resist</strong> (kaali mitti and sawdust paste) submerged in subterranean natural indigo vats, and classic <strong>fadat</strong> printing. Fabrics have a characteristic yellowish-cream ground mordanted with Harda (myrobalan) tannin.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Ground Tone</span>
+                <span className="text-stone-600">Warm cream / dyed indigo</span>
+              </div>
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Primary Motifs</span>
+                <span className="text-stone-600">Kangura, Leher, Stylized Butas</span>
+              </div>
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Dye Recipes</span>
+                <span className="text-stone-600">Natural Indigo, Syahi, Madder</span>
+              </div>
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Master Heritage</span>
+                <span className="text-stone-600">Lalchand Derawala (1993)</span>
+              </div>
+            </div>
+
+            <Link
+              href="/products?cluster=bagru"
+              className="inline-flex items-center gap-2 text-xs font-bold text-amber-900 hover:text-amber-950 underline underline-offset-4"
+            >
+              <span>Explore Verified Bagru Collection</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {/* Cluster 2: Sanganer */}
+          <div className="bg-gradient-to-br from-[#F5F8FA] to-white rounded-3xl p-8 border-2 border-sky-200/90 shadow-sm space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-sky-900 uppercase tracking-wider">GI Application No. 147</span>
+                <h3 className="font-serif text-2xl font-bold text-stone-900 mt-1">Sanganeri Hand Block Printing</h3>
+                <p className="text-xs text-stone-500">Registered: 19 March 2009 • Jaipur District</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl bg-sky-100 flex items-center justify-center font-serif text-xl font-bold text-sky-900 border border-sky-300">
+                सांगानेर
+              </div>
+            </div>
+
+            <p className="text-stone-600 text-xs leading-relaxed">
+              Celebrated for exquisite <strong>fine floral boota and bootie</strong> motifs printed on sparkling white river-washed cotton mulmul and Bangalore silk. Natural vegetable extracts include Tesu (flame of the forest), Anar chilka (pomegranate), and Manjith.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Ground Tone</span>
+                <span className="text-stone-600">Pure sparkling river white</span>
+              </div>
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Primary Motifs</span>
+                <span className="text-stone-600">Delicate Boota, Kamal, Floral Jaals</span>
+              </div>
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Dye Recipes</span>
+                <span className="text-stone-600">Tesu, Anar chilka, Manjith</span>
+              </div>
+              <div className="bg-white p-3 rounded-xl border border-stone-200">
+                <span className="font-bold text-stone-900 block">Master Heritage</span>
+                <span className="text-stone-600">Brij Ballabh Udaiwal (Shilpi)</span>
+              </div>
+            </div>
+
+            <Link
+              href="/products?cluster=sanganer"
+              className="inline-flex items-center gap-2 text-xs font-bold text-sky-900 hover:text-sky-950 underline underline-offset-4"
+            >
+              <span>Explore Verified Sanganeri Collection</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. BUYER ASSURANCE: 5 PHYSICAL CHECKS PROMO */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-gradient-to-r from-amber-900 via-amber-950 to-stone-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl border border-amber-800/40 relative overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <div className="lg:col-span-8 space-y-4">
+              <span className="text-xs uppercase font-bold tracking-widest text-amber-300 bg-amber-400/20 px-3 py-1 rounded-full border border-amber-300/30">
+                Consumer Field Manual
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-amber-100">
+                Can You Tell a Real Block Print from a Screen Print?
+              </h2>
+              <p className="text-stone-300 text-sm leading-relaxed max-w-2xl">
+                Our 40-fabric empirical study discovered that <strong>12.5% of retail items</strong> marketed as &quot;traditional handloom block prints&quot; are actually cheap rotary screen prints with zero artisan wages. Learn the 5 physical tests: reverse strike-through, ground color, block overlaps, and natural scent.
+              </p>
+              
+              <div className="pt-2 flex flex-wrap items-center gap-4">
                 <Link
-                  href="/verify/CTI-BAG-000184"
-                  className="w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition"
+                  href="/authenticity-guide"
+                  className="bg-amber-400 hover:bg-amber-300 text-stone-950 px-6 py-3 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2"
                 >
-                  <span>Inspect 7-Layer Scorecard</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <BookOpenCheck className="w-4 h-4" />
+                  <span>Open Full Authenticity Guide</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/research"
+                  className="text-amber-200 hover:text-white text-xs font-semibold underline underline-offset-4"
+                >
+                  View 40-Sample Research Matrix →
                 </Link>
               </div>
             </div>
+
+            <div className="lg:col-span-4 bg-white/10 rounded-2xl p-5 border border-white/20 backdrop-blur-xs space-y-3 text-xs">
+              <span className="font-bold text-amber-300 uppercase tracking-wider block">The 3-Second Rule</span>
+              <div className="space-y-2 text-stone-200">
+                <p>✓ <strong>Flip the fabric:</strong> Real block print bleeds 60-90% to the back.</p>
+                <p>✓ <strong>Smell the cloth:</strong> Earthy iron-jaggery aroma, not plastic.</p>
+                <p>✓ <strong>Scan the QR tag:</strong> Verify batch provenance on CRAFTTRUE.</p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* 2. THE CORE PROBLEM: WHAT IS CRAFTWASHING? */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-amber-50/60 border border-amber-200/80 rounded-3xl p-8 sm:p-12 space-y-6">
-          <div className="max-w-3xl space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
-              The Ph.D. Problem Statement
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-              Why a Simple "Authentic" Label is No Longer Enough
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              In handicraft exhibitions and online marketplaces, consumers frequently encounter rotary screen and digital prints marketed with romanticized artisan buzzwords like <em>"100% Traditional Bagru Handloom"</em> or <em>"Handmade Sanganeri"</em>. 
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-            <div className="bg-white p-5 rounded-2xl border border-stone-200 space-y-2">
-              <h4 className="font-bold text-sm text-stone-900">Conflating Weaving with Printing</h4>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                Bagru and Sanganer are <strong>printing techniques</strong>, not weaving styles. A genuine block print can be stamped on handloom, mill cotton, or silk. Misleading labels often claim "handloom" to disguise machine prints.
-              </p>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-stone-200 space-y-2">
-              <h4 className="font-bold text-sm text-stone-900">Screen Prints Masquerading as Hand-Block</h4>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                Chemical rotary screens mimic block motifs in seconds, costing 1/5th the artisan labor. They lack the manual registration variation and reverse-side dye penetration of true teak-wood hand block stamping.
-              </p>
-            </div>
-
-            <div className="bg-white p-5 rounded-2xl border border-stone-200 space-y-2">
-              <h4 className="font-bold text-sm text-stone-900">QR Code Counterfeiting</h4>
-              <p className="text-xs text-stone-600 leading-relaxed">
-                Anyone can print a generic QR code. Without cryptographic product-level identifiers, evidence linking, and duplicate anomaly detection, a QR code simply repeats whatever the seller claims.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. THE 4 DEMONSTRATION SCENARIOS (Direct Tester Links) */}
+      {/* 4. THE 4 DEMONSTRATION SCENARIOS (Direct Ph.D. Evaluation Cards) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
@@ -183,11 +317,14 @@ export default function HomePage() {
               Interactive Prototype Evaluation
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-              The 4 Ph.D. Test Cases in Action
+              The 4 Ph.D. Test Scenarios in Action
             </h2>
+            <p className="text-xs text-stone-500 mt-1">
+              Test each research scenario directly against the 7-Layer Authenticity Evaluation Framework.
+            </p>
           </div>
           <Link href="/scan" className="text-xs font-bold text-amber-800 hover:text-amber-900 flex items-center gap-1">
-            <span>Open Camera Scanner</span>
+            <span>Open Interactive Camera Scanner</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -238,7 +375,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. THE 7-LAYER AUTHENTICITY FRAMEWORK EXPLAINER */}
+      {/* 5. THE 7-LAYER AUTHENTICITY FRAMEWORK (AEF) */}
       <section className="bg-stone-900 text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -266,7 +403,7 @@ export default function HomePage() {
               <span className="font-mono text-amber-400 text-xs font-bold">02 / MAKER</span>
               <h4 className="font-bold text-sm text-white">Artisan &amp; Workshop Identity</h4>
               <p className="text-stone-400 leading-relaxed">
-                Validation of the generational Chhipa artisan, registered workshop, or verified cooperative identity.
+                Validation of generational Chhipa artisans, registered workshops, and Pehchan artisan card registry.
               </p>
             </div>
 
@@ -274,7 +411,7 @@ export default function HomePage() {
               <span className="font-mono text-amber-400 text-xs font-bold">03 / TECHNIQUE</span>
               <h4 className="font-bold text-sm text-white">Printing Process Authenticity</h4>
               <p className="text-stone-400 leading-relaxed">
-                Differentiating authentic hand-block stamping (carved teak blocks) from mechanized screen or digital printing.
+                Differentiating hand-carved teak/rorda wood block stamping from mechanized rotary screens.
               </p>
             </div>
 
@@ -282,7 +419,7 @@ export default function HomePage() {
               <span className="font-mono text-amber-400 text-xs font-bold">04 / MATERIALS</span>
               <h4 className="font-bold text-sm text-white">Material &amp; Dye Chemistry</h4>
               <p className="text-stone-400 leading-relaxed">
-                Disclosing whether fabric is handloom or mill cotton, and whether dyes are natural vegetable/Dabu or synthetic pigments.
+                Disclosing handloom cotton weave vs mill polyester, and vegetable/Dabu extracts vs synthetic azo pigments.
               </p>
             </div>
 
@@ -298,7 +435,7 @@ export default function HomePage() {
               <span className="font-mono text-amber-400 text-xs font-bold">06 / CUSTODY</span>
               <h4 className="font-bold text-sm text-white">Supply-Chain Traceability</h4>
               <p className="text-stone-400 leading-relaxed">
-                Documenting production custody stages from fabric scouring and Dabu mud resist to natural river washing.
+                Documenting production custody stages from fabric scouring and Dabu mud resist to open sun baking.
               </p>
             </div>
 
@@ -306,7 +443,7 @@ export default function HomePage() {
               <span className="font-mono text-amber-400 text-xs font-bold">07 / TRUTHFULNESS</span>
               <h4 className="font-bold text-sm text-white">Commercial Claim Authenticity</h4>
               <p className="text-stone-400 leading-relaxed">
-                Auditing whether the seller's advertised marketplace claims and prices faithfully reflect the verified evidence.
+                Auditing whether advertised retail descriptions and prices faithfully reflect verified batch evidence.
               </p>
             </div>
 
@@ -326,6 +463,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }
