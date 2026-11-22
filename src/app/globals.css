@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-terracotta: #c85a32;
+  --secondary-saffron: #ff9933;
+  --accent-gold: #d4af37;
+  --dark-indigo: #1f2d4a;
+  --sandstone: #fdfaf6;
+}
+
+body {
+  background-color: var(--sandstone);
+  color: #262626;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Indian heritage motifs & accents */
+.pattern-border {
+  background-image: radial-gradient(#c85a32 0.75px, transparent 0.75px), radial-gradient(#d4af37 0.75px, #fdfaf6 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+}
