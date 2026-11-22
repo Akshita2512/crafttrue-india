@@ -21,7 +21,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
       gi_authorized_user_no: 'GI-183-AU-BAGRU-019',
       gi_status: 'Verified',
       bio: 'National Award Winner (1999) and National Merit Awardee (2011). Master of traditional fadat and dabu printing, master instructor who has conducted hand-block printing demonstrations globally (Germany, Italy, South Korea).',
-      image_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
+      image_url: '/images/textiles/bagru-village-printing.jpg',
       consent_obtained: true
     },
     weaving_method: 'Handloom',
@@ -30,7 +30,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
     fabric_composition: '100% Handloom Cotton (Fine 60s Count Kora Base)',
     verification_status: 'VERIFIED',
     retail_price_inr: 2850.00,
-    image_url: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/bagru-fadat.jpg',
     is_demo: true,
     total_scans: 28,
     has_duplication_anomaly: false,
@@ -121,7 +121,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
       gi_authorized_user_no: 'GI-147-AU-SGR-042',
       gi_status: 'Verified',
       bio: 'National Awardee (1991) and State Awardee (1986). Founder of Shilpi Sansthan NGO, supporting over 85 printing units and 12 women Self-Help Groups. Renowned natural indigo fermentation pioneer and Director of CCWA.',
-      image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
+      image_url: '/images/textiles/hand-printing-process.jpg',
       consent_obtained: true
     },
     weaving_method: 'Handloom',
@@ -130,7 +130,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
     fabric_composition: '100% Fine Cotton Mulmul (100s Count Handloom)',
     verification_status: 'VERIFIED',
     retail_price_inr: 3450.00,
-    image_url: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/sanganeri-floral.jpg',
     is_demo: true,
     total_scans: 41,
     has_duplication_anomaly: false,
@@ -221,7 +221,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
       gi_authorized_user_no: undefined,
       gi_status: 'Not Applicable',
       bio: 'Facility operator claimed Bagru heritage. On-site physical audit revealed motorized flatbed screen printing tables with zero wooden blocks or natural indigo vats present.',
-      image_url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80',
+      image_url: '/images/textiles/rajasthani-printing-blocks.jpg',
       consent_obtained: false
     },
     weaving_method: 'Mill-Made',
@@ -230,7 +230,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
     fabric_composition: 'Poly-Cotton Blend (70% Polyester, 30% Cotton)',
     verification_status: 'CONFIRMED_MISREPRESENTATION',
     retail_price_inr: 1699.00,
-    image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/jaipur-textile-printing.jpg',
     is_demo: true,
     total_scans: 89,
     has_duplication_anomaly: false,
@@ -307,7 +307,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
       gi_authorized_user_no: 'GI-183-AU-BAGRU-019',
       gi_status: 'Verified',
       bio: 'Authentic artisan whose genuine physical swing tag serial number appears to have been photo-copied and affixed to unauthorized garments by an intermediary distributor.',
-      image_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
+      image_url: '/images/textiles/bagru-village-printing.jpg',
       consent_obtained: true
     },
     weaving_method: 'Handloom',
@@ -316,7 +316,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
     fabric_composition: '100% Cotton Handloom',
     verification_status: 'UNDER_INVESTIGATION',
     retail_price_inr: 2600.00,
-    image_url: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/bagru-dabu-indigo.jpg',
     is_demo: true,
     total_scans: 112,
     has_duplication_anomaly: true,
@@ -438,7 +438,7 @@ export const DEMO_COMPLAINTS: ConsumerComplaint[] = [
     purchase_price_inr: 1699.00,
     complaint_category: 'CRAFTWASHING',
     complaint_details: 'The item was advertised as 100% Bagru Dabu hand-block printed cotton. On delivery, the reverse side is completely white with zero dye penetration, and the fabric has a strong plastic paint odor. It is an obvious flatbed screen print sold at handloom prices.',
-    evidence_image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80',
+    evidence_image_url: '/images/textiles/jaipur-textile-printing.jpg',
     status: 'INVESTIGATING',
     created_at: '2026-11-19T14:30:00Z',
     admin_action_notes: 'Assigned to forensic textile verifier. Formal inquiry sent to merchant platform under CPA 2019 Section 89.'
@@ -452,7 +452,7 @@ export const DEMO_COMPLAINTS: ConsumerComplaint[] = [
     purchase_price_inr: 2600.00,
     complaint_category: 'SUSPECTED_DUPLICATE_QR',
     complaint_details: 'Scanned the tag in store and noticed the scan counter jumped from 4 to 112 within minutes. Verifier page showed pings from 3 cities simultaneously.',
-    evidence_image_url: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80',
+    evidence_image_url: '/images/textiles/bagru-village-printing.jpg',
     status: 'ESCALATED_LEGAL',
     created_at: '2026-11-20T11:15:00Z',
     admin_action_notes: 'Duplicate QR code quarantined. Investigation into retail consignment distributor initiated.'
@@ -482,7 +482,6 @@ export const DEMO_AUDIT_LOGS: AuditLog[] = [
   }
 ];
 
-
 export function getProductByCode(code: string): CraftProduct | undefined {
   const normalized = code.trim().toLowerCase();
   return DEMO_PRODUCTS.find(
@@ -493,7 +492,6 @@ export function getProductByCode(code: string): CraftProduct | undefined {
 export function getProductById(id: string): CraftProduct | undefined {
   return DEMO_PRODUCTS.find(p => p.id === id || p.product_code === id);
 }
-
 
 export const DEMO_SURVEYS: ResearchSurveyResponse[] = [
   {

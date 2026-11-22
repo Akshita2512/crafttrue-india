@@ -6,7 +6,7 @@ export const mockCategories: Category[] = [
     name: 'Bagru Fadat & Dabu',
     slug: 'bagru-fadat-dabu',
     description: 'Earthy vegetable-dyed block prints with natural indigo, madder red, and fermented iron black on warm cream ground.',
-    image_url: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=600&q=80',
+    image_url: '/images/textiles/bagru-fadat.jpg',
     item_count: 24
   },
   {
@@ -14,7 +14,7 @@ export const mockCategories: Category[] = [
     name: 'Sanganeri Fine Florals',
     slug: 'sanganeri-fine-florals',
     description: 'Delicate boota, bootie, and floral jaal prints on pure white mulmul and cotton-silk bases with natural plant dyes.',
-    image_url: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=600&q=80',
+    image_url: '/images/textiles/sanganeri-floral.jpg',
     item_count: 32
   },
   {
@@ -22,7 +22,7 @@ export const mockCategories: Category[] = [
     name: 'Dabu Mud-Resist Indigo',
     slug: 'dabu-mud-resist-indigo',
     description: 'Traditional mud-resist printing using kaali mitti and sawdust, dipped into deep subterranean indigo vats.',
-    image_url: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80',
+    image_url: '/images/textiles/bagru-dabu-indigo.jpg',
     item_count: 18
   },
   {
@@ -30,7 +30,7 @@ export const mockCategories: Category[] = [
     name: 'GI Hand-Block Silk Sarees',
     slug: 'gi-hand-block-silk-sarees',
     description: 'National award-winning fine block-printed silk and tussar sarees with dual-side print registration.',
-    image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=600&q=80',
+    image_url: '/images/textiles/hand-printing-process.jpg',
     item_count: 14
   }
 ];
@@ -44,8 +44,8 @@ export const mockArtisans: Artisan[] = [
     state: 'Rajasthan',
     craft_type: 'Bagru Hand-Block Printing (Fadat & Dabu Resist)',
     experience_years: 36,
-    avatar_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
-    cover_image_url: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=1200&q=80',
+    avatar_url: '/images/textiles/bagru-village-printing.jpg',
+    cover_image_url: '/images/textiles/bagru-fadat.jpg',
     is_verified: true,
     award_title: 'National Awardee (1999) & National Merit (2011)',
     story: 'Lalchand-ji preserves the delicate Mughal-era motifs that require up to 8 months of trials from design concept to final strike. He has taught Bagru block printing across Germany, Italy, and South Korea.'
@@ -58,8 +58,8 @@ export const mockArtisans: Artisan[] = [
     state: 'Rajasthan',
     craft_type: 'Sanganeri Hand Block Printing & Natural Indigo',
     experience_years: 34,
-    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
-    cover_image_url: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=1200&q=80',
+    avatar_url: '/images/textiles/hand-printing-process.jpg',
+    cover_image_url: '/images/textiles/sanganeri-floral.jpg',
     is_verified: true,
     award_title: 'National Awardee (1991) • Pehchan ID NRJPC241207',
     story: 'Holder of Government of India Pehchan ID NRJPC241207, Brij Ballabh-ji specializes in 24-hour fermented indigo stock solutions and exquisite multi-block boota printing on sparkling white river-washed cottons.'
@@ -80,7 +80,7 @@ export const mockProducts: Product[] = [
     heritage_origin: 'Laxmi Nath Chowk, Bagru, Jaipur, Rajasthan',
     gi_tag: 'Bagru Hand Block Print (GI No. 183)',
     material: '100% Handloom Cotton (Harda Mordanted)',
-    image_url: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/bagru-fadat.jpg',
     in_stock: true,
     rating: 4.9,
     review_count: 38,
@@ -102,7 +102,7 @@ export const mockProducts: Product[] = [
     heritage_origin: 'Siliberi, Sanganer, Jaipur, Rajasthan',
     gi_tag: 'Sanganeri Hand Block Printing (GI No. 147)',
     material: '100% Cotton Mulmul (Fine 100s Count)',
-    image_url: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/sanganeri-floral.jpg',
     in_stock: true,
     rating: 5.0,
     review_count: 52,
@@ -124,7 +124,7 @@ export const mockProducts: Product[] = [
     heritage_origin: 'Bagru, Jaipur, Rajasthan',
     gi_tag: 'Bagru Hand Block Print (GI No. 183)',
     material: '100% Handloom Cotton',
-    image_url: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/bagru-dabu-indigo.jpg',
     in_stock: true,
     rating: 4.8,
     review_count: 29,
@@ -146,7 +146,7 @@ export const mockProducts: Product[] = [
     heritage_origin: 'Sanganer, Jaipur, Rajasthan',
     gi_tag: 'Sanganeri Hand Block Printing (GI No. 147)',
     material: 'Pure Bangalore Silk with Vegetable Dyes',
-    image_url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80',
+    image_url: '/images/textiles/hand-printing-process.jpg',
     in_stock: true,
     rating: 5.0,
     review_count: 17,

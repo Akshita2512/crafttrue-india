@@ -10,7 +10,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const imageUrl = product.images?.[0] || (product as any).image_url || 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=800&q=80';
+  const imageUrl = product.images?.[0] || (product as any).image_url || '/images/textiles/bagru-fadat.jpg';
   const artisanName = product.artisan?.name || (product as any).artisan_name;
 
   return (

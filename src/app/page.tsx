@@ -100,7 +100,7 @@ export default function HomePage() {
               <div className="bg-white rounded-3xl p-6 border border-amber-200/80 shadow-xl space-y-4">
                 <div className="relative rounded-2xl overflow-hidden aspect-4/3 bg-stone-100 border border-amber-100">
                   <img
-                    src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=800&q=80"
+                    src="/images/textiles/bagru-fadat.jpg"
                     alt="Authentic Bagru Fadat Hand Block Printing on Harda-Mordanted Cotton"
                     className="w-full h-full object-cover"
                   />
