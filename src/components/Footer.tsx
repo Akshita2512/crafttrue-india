@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, MapPin, Award, BookOpen, AlertCircle } from 'lucide-react';
+import { ShieldCheck, MapPin, Award, BookOpen, AlertCircle, BookOpenCheck, ShoppingBag } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -23,7 +23,7 @@ export const Footer: React.FC = () => {
               <MapPin className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white">Bagru & Sanganer Clusters</h4>
+              <h4 className="text-sm font-semibold text-white">Bagru &amp; Sanganer Clusters</h4>
               <p className="text-xs text-stone-400">GI-associated Rajasthani hand-block printing</p>
             </div>
           </div>
@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
             </div>
             <div>
               <h4 className="text-sm font-semibold text-white">Weaving vs. Printing</h4>
-              <p className="text-xs text-stone-400">Separating fabric type from printing process</p>
+              <p className="text-xs text-stone-400">Separating fabric base from printing technique</p>
             </div>
           </div>
 
@@ -44,7 +44,7 @@ export const Footer: React.FC = () => {
             </div>
             <div>
               <h4 className="text-sm font-semibold text-white">Price Transparency</h4>
-              <p className="text-xs text-stone-400">Artisan labour & cost disclosures</p>
+              <p className="text-xs text-stone-400">Artisan wages &amp; cost breakdown</p>
             </div>
           </div>
         </div>
@@ -66,54 +66,68 @@ export const Footer: React.FC = () => {
             <div className="p-3 rounded-lg bg-stone-800/80 border border-stone-700 text-[11px] text-stone-300 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <span>
-                <strong>Academic Research Integrity:</strong> All product records in this demonstration are marked <em>DEMO DATA — NOT REAL CERTIFICATION</em>. Independent human verification and official registry audits are required for live certification.
+                <strong>Academic Research Integrity:</strong> All product records in this demonstration are marked <em>DEMO DATA — NOT REAL CERTIFICATION</em>. Developed in accordance with the Geographical Indications of Goods Act, 1999 and DPDP Act, 2023.
               </span>
             </div>
           </div>
 
           {/* Quick Links */}
           <div className="md:col-span-3 space-y-3">
-            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-400">Verification Ecosystem</h5>
+            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-400">Consumer &amp; Verification</h5>
             <ul className="space-y-2 text-xs">
+              <li>
+                <Link href="/products" className="hover:text-amber-300 transition flex items-center gap-1.5">
+                  <ShoppingBag className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Hand-Block Catalog</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/authenticity-guide" className="hover:text-amber-300 transition flex items-center gap-1.5">
+                  <BookOpenCheck className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Buyer Authenticity Guide</span>
+                </Link>
+              </li>
               <li>
                 <Link href="/scan" className="hover:text-amber-300 transition">Interactive QR Scanner</Link>
               </li>
               <li>
-                <Link href="/verify/CTI-BAG-000184" className="hover:text-amber-300 transition">Sample Verified Product Record</Link>
+                <Link href="/artisans" className="hover:text-amber-300 transition">Master Artisan Directory</Link>
               </li>
               <li>
-                <Link href="/artisan/register-product" className="hover:text-amber-300 transition">Artisan Product Registration &amp; Tag Generator</Link>
+                <Link href="/artisan/register-product" className="hover:text-amber-300 transition">Artisan Registration Portal</Link>
               </li>
               <li>
                 <Link href="/admin" className="hover:text-amber-300 transition">Verifier Audit Dashboard</Link>
               </li>
               <li>
-                <Link href="/research" className="hover:text-amber-300 transition">Ph.D. Research Analytics &amp; SPSS Export</Link>
+                <Link href="/research" className="hover:text-amber-300 transition">Ph.D. Analytics &amp; SPSS Export</Link>
               </li>
             </ul>
           </div>
 
           {/* Cluster Reference */}
           <div className="md:col-span-4 space-y-3">
-            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-400">Protected Clusters (GI)</h5>
-            <div className="text-xs text-stone-400 space-y-2">
-              <div>
-                <p className="font-semibold text-stone-200">Bagru Hand Block Print (GI No. 177)</p>
-                <p className="text-[11px]">Dabu mud-resist, natural indigo vats, Harda base, syahi (iron ferment) outlines.</p>
+            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-400">Protected Rajasthani Clusters</h5>
+            <div className="text-xs text-stone-400 space-y-3">
+              <div className="p-3 rounded-xl bg-stone-800/60 border border-stone-700 space-y-1">
+                <span className="font-bold text-white block">Bagru Hand Block Print (GI No. 183)</span>
+                <p className="text-[11px] text-stone-400">Registered: 11 May 2011 • Dabu mud-resist, natural indigo vats, Harda cream ground. Master: Lalchand Derawala.</p>
               </div>
-              <div className="pt-2 border-t border-stone-800">
-                <p className="font-semibold text-stone-200">Sanganer Hand Block Print (GI No. 211)</p>
-                <p className="text-[11px]">Fine floral bootas, crisp mulmul fabrics, delicate Rekh and Datta block pairings.</p>
+              <div className="p-3 rounded-xl bg-stone-800/60 border border-stone-700 space-y-1">
+                <span className="font-bold text-white block">Sanganeri Hand Block Printing (GI No. 147)</span>
+                <p className="text-[11px] text-stone-400">Registered: 19 March 2009 • Fine floral boota &amp; bootie on river-washed white mulmul. Master: Brij Ballabh Udaiwal.</p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-stone-800 text-center text-xs text-stone-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 CRAFTTRUE INDIA • Doctoral Research Demonstration Framework.</p>
-          <p className="text-[11px] text-stone-400">
-            Conforming with Indian GI Act, 1999 &amp; Digital Personal Data Protection (DPDP) Act, 2023.
-          </p>
+        <div className="pt-8 mt-8 border-t border-stone-800 text-center text-xs text-stone-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© 2026 CRAFTTRUE INDIA. Ph.D. Research Prototype — All Rights Reserved.</p>
+          <div className="flex items-center gap-4 text-[11px]">
+            <Link href="/authenticity-guide" className="hover:underline">Authenticity Matrix</Link>
+            <Link href="/research" className="hover:underline">Doctoral Methodology</Link>
+            <Link href="/admin" className="hover:underline">Verifier Login</Link>
+          </div>
         </div>
       </div>
     </footer>
