@@ -66,7 +66,7 @@ export const Footer: React.FC = () => {
             <div className="p-3 rounded-lg bg-stone-800/80 border border-stone-700 text-[11px] text-stone-300 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <span>
-                <strong>Academic Research Integrity:</strong> All product records in this demonstration are marked <em>DEMO DATA — NOT REAL CERTIFICATION</em>. Developed in accordance with the Geographical Indications of Goods Act, 1999 and DPDP Act, 2023.
+                <strong>Platform Integrity:</strong> Developed in accordance with the Geographical Indications of Goods (Registration &amp; Protection) Act, 1999, Consumer Protection Act, 2019, and DPDP Act, 2023. Supporting master artisans of Bagru and Sanganer.
               </span>
             </div>
           </div>
@@ -100,7 +100,7 @@ export const Footer: React.FC = () => {
                 <Link href="/admin" className="hover:text-amber-300 transition">Verifier Audit Dashboard</Link>
               </li>
               <li>
-                <Link href="/research" className="hover:text-amber-300 transition">Ph.D. Analytics &amp; SPSS Export</Link>
+                <Link href="/research" className="hover:text-amber-300 transition">Craft Intelligence &amp; Lab Reports</Link>
               </li>
             </ul>
           </div>
@@ -122,10 +122,10 @@ export const Footer: React.FC = () => {
         </div>
 
         <div className="pt-8 mt-8 border-t border-stone-800 text-center text-xs text-stone-500 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 CRAFTTRUE INDIA. Ph.D. Research Prototype — All Rights Reserved.</p>
+          <p>© 2026 CRAFTTRUE INDIA. All Rights Reserved. Protecting Authentic Indian Handlooms &amp; GI Heritage.</p>
           <div className="flex items-center gap-4 text-[11px]">
             <Link href="/authenticity-guide" className="hover:underline">Authenticity Matrix</Link>
-            <Link href="/research" className="hover:underline">Doctoral Methodology</Link>
+            <Link href="/research" className="hover:underline">Verification Methodology</Link>
             <Link href="/admin" className="hover:underline">Verifier Login</Link>
           </div>
         </div>

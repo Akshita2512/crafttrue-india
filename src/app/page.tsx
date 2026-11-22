@@ -36,7 +36,7 @@ export default function HomePage() {
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-950 text-xs font-bold border border-amber-300">
                 <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                <span>Ph.D. Research Initiative • Combating Craftwashing in Rajasthan GI Clusters</span>
+                <span>National Craft Authenticity Initiative • Combating Craftwashing in Rajasthan GI Clusters</span>
               </div>
 
               <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight leading-[1.15]">
@@ -309,18 +309,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. THE 4 DEMONSTRATION SCENARIOS (Direct Ph.D. Evaluation Cards) */}
+      {/* 4. VERIFICATION IN ACTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
-              Interactive Prototype Evaluation
+              Tested Craft Verifications
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
-              The 4 Ph.D. Test Scenarios in Action
+              Craft Authenticity Verification in Action
             </h2>
             <p className="text-xs text-stone-500 mt-1">
-              Test each research scenario directly against the 7-Layer Authenticity Evaluation Framework.
+              Verify authentic handlooms vs. craftwashed imitations directly against the 7-Layer Authenticity Framework.
             </p>
           </div>
           <Link href="/scan" className="text-xs font-bold text-amber-800 hover:text-amber-900 flex items-center gap-1">

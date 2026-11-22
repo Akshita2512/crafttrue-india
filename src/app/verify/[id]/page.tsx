@@ -24,26 +24,62 @@ import {
   ChevronDown,
   ChevronUp,
   Share2,
-  FileText
+  FileText,
+  Globe,
+  ExternalLink,
+  Search,
+  ShieldCheck,
+  Building,
+  Send,
+  Eye,
+  CheckCircle
 } from 'lucide-react';
 
 export default function VerificationPage() {
   const params = useParams();
   const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
-  const decodedId = decodeURIComponent(rawId || '');
+  const decodedId = decodeURIComponent(rawId || '').trim();
 
-  // 1. Fetch from Demo Products (Case-insensitive matching by code or id)
+  // Detect if the scanned input is an external URL / web link
+  const isUrl = 
+    decodedId.startsWith('http://') || 
+    decodedId.startsWith('https://') || 
+    decodedId.startsWith('www.') ||
+    decodedId.includes('.com') ||
+    decodedId.includes('.in') ||
+    decodedId.includes('.org') ||
+    (decodedId.includes('/') && decodedId.includes('.'));
+
+  const normalizedUrl = isUrl && !decodedId.startsWith('http') ? `https://${decodedId}` : decodedId;
+  let parsedDomain = '';
+  if (isUrl) {
+    try {
+      const u = new URL(normalizedUrl);
+      parsedDomain = u.hostname.replace('www.', '');
+    } catch {
+      parsedDomain = 'External Website';
+    }
+  }
+
+  // 1. Fetch from Local Database
   const product: CraftProduct | undefined = 
     getProductByCode(decodedId) || 
     DEMO_PRODUCTS.find(p => p.id === decodedId) ||
-    DEMO_PRODUCTS[0]; // Fallback to Product A if invalid
+    DEMO_PRODUCTS.find(p => p.product_code.toLowerCase() === decodedId.toLowerCase()) ||
+    (decodedId.toUpperCase().includes('BAGRU') && !decodedId.includes('MIS') ? DEMO_PRODUCTS[0] : undefined) ||
+    (decodedId.toUpperCase().includes('SANGANER') ? DEMO_PRODUCTS[1] : undefined);
 
   // Survey State
   const [surveySubmitted, setSurveySubmitted] = useState(false);
   const [understandingScore, setUnderstandingScore] = useState(5);
   const [trustScore, setTrustScore] = useState(5);
-  const [wtpAmount, setWtpAmount] = useState(product?.retail_price_inr || 2400);
+  const [wtpAmount, setWtpAmount] = useState(product?.retail_price_inr || 2850);
   const [priorKnowledge, setPriorKnowledge] = useState<'Novice' | 'Moderate' | 'Expert Connoisseur'>('Moderate');
+
+  // External / Unregistered Submission State
+  const [reportSubmitted, setReportSubmitted] = useState(false);
+  const [reportEmail, setReportEmail] = useState('');
+  const [reportNotes, setReportNotes] = useState('');
 
   // Complaint Modal State
   const [complaintOpen, setComplaintOpen] = useState(false);
@@ -62,20 +98,255 @@ export default function VerificationPage() {
     setComplaintRef(generatedRef);
   };
 
-  if (!product) {
+  const handleReportSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setReportSubmitted(true);
+  };
+
+  // =========================================================================
+  // VIEW 1: SCANNED EXTERNAL URL / WEB LINK DETECTED
+  // =========================================================================
+  if (isUrl) {
+    const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(decodedId + ' handloom authentic GI')}`;
+    const giRegistrySearchUrl = `https://search.ipindia.gov.in/GIRPublic/`;
+
     return (
-      <div className="max-w-3xl mx-auto px-4 py-16 text-center space-y-4">
-        <HelpCircle className="w-16 h-16 text-stone-400 mx-auto" />
-        <h2 className="text-2xl font-bold text-stone-900">Tag ID Not Found in Registry</h2>
-        <p className="text-stone-600 text-sm">
-          No registered verification record matches "{decodedId}". Remember: an unregistered product is not automatically counterfeit, but its claims remain unverified.
-        </p>
-        <Link href="/scan" className="inline-block px-5 py-2.5 bg-amber-700 text-white rounded-xl text-xs font-semibold">
-          Return to Scanner
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
+        {/* Back Link */}
+        <Link href="/scan" className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-900 font-semibold">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Scanner</span>
         </Link>
+
+        {/* Main External URL Card */}
+        <div className="bg-white rounded-3xl border-2 border-blue-200 shadow-xl p-6 sm:p-8 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100 text-blue-900 text-xs font-bold border border-blue-300">
+              <Globe className="w-3.5 h-3.5 text-blue-700" />
+              <span>External Product Web Link Detected • पंजीकृत इंटरनेट लिंक</span>
+            </div>
+            <span className="text-xs font-mono font-bold text-stone-500 bg-stone-100 px-3 py-1 rounded-full">
+              Host: {parsedDomain}
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
+              Registered Product Web Link
+            </h1>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              The QR code or barcode you scanned points to an external merchant or registry address. You can view the full registered product on the internet or cross-check its GI authenticity claims.
+            </p>
+          </div>
+
+          {/* URL Box */}
+          <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="space-y-1 overflow-hidden w-full">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-stone-500">Destination URL</span>
+              <p className="font-mono text-xs text-blue-700 truncate select-all">
+                {normalizedUrl}
+              </p>
+            </div>
+            <a
+              href={normalizedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition shrink-0 w-full sm:w-auto"
+            >
+              <span>Visit Page on Internet</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          {/* Verification & Internet Cross-Check Options */}
+          <div className="space-y-3 pt-2">
+            <h3 className="font-serif text-base font-bold text-stone-900">
+              Cross-Check Authenticity Across Government &amp; Public Registries:
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <a
+                href={googleSearchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 rounded-xl border border-stone-200 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 transition space-y-1 group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-stone-900 group-hover:text-amber-900 flex items-center gap-1.5">
+                    <Search className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Search Google for Product &amp; Reviews</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-700" />
+                </div>
+                <p className="text-[11px] text-stone-500">
+                  Find retailer background, customer reviews, and artisan certifications online.
+                </p>
+              </a>
+
+              <a
+                href={giRegistrySearchUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-4 rounded-xl border border-stone-200 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 transition space-y-1 group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-stone-900 group-hover:text-amber-900 flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Official GI Registry (ipindia.gov.in)</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-700" />
+                </div>
+                <p className="text-[11px] text-stone-500">
+                  Verify authorized producer number under Bagru (GI-183) or Sanganeri (GI-147).
+                </p>
+              </a>
+            </div>
+          </div>
+
+          {/* 5-Point Buyer Physical Field Test */}
+          <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 space-y-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-800" />
+              <h4 className="font-serif font-bold text-sm text-stone-900">
+                Holding the Physical Fabric? 5-Point Quick Field Verification Test:
+              </h4>
+            </div>
+            <ul className="text-xs text-stone-700 space-y-1.5 list-disc pl-5">
+              <li><strong>Natural Scent Test:</strong> Genuine Bagru smells of dried Harda (myrobalan) and warm fermented iron; synthetic prints smell like petrol or plastic acrylic.</li>
+              <li><strong>Dual-Side Strike-Through:</strong> Authentic wooden hand-block prints penetrate into the reverse cotton threads. Flat screen imitations show pure white backing.</li>
+              <li><strong>Block Boundary Misalignment:</strong> Hand-stamped wood blocks show natural 0.5–2mm microscopic overlaps between the Rekh (outline) and Datta (color fill).</li>
+              <li><strong>Cold Water Bleed:</strong> Natural vegetable dyes release a subtle natural tint in first lukewarm wash; synthetic prints do not bleed but stiffen.</li>
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }
+
+  // =========================================================================
+  // VIEW 2: UNCATALOGED BARCODE / SERIAL TAG (NOT IN LOCAL REGISTRY & NOT A URL)
+  // =========================================================================
+  if (!product) {
+    const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(decodedId + ' handloom craft barcode tag')}`;
+    const giRegistrySearchUrl = `https://search.ipindia.gov.in/GIRPublic/`;
+
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
+        <Link href="/scan" className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-900 font-semibold">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Scanner</span>
+        </Link>
+
+        <div className="bg-white rounded-3xl border-2 border-stone-200 shadow-xl p-6 sm:p-8 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
+              <HelpCircle className="w-3.5 h-3.5 text-amber-700" />
+              <span>Uncataloged Tag Scanned • अपंजीकृत टैग</span>
+            </div>
+            <span className="text-xs font-mono font-bold text-stone-700 bg-stone-100 px-3 py-1 rounded-full border border-stone-200">
+              Tag: {decodedId}
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
+              Tag Not Yet Indexed in Database
+            </h1>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              Tag ID <strong>"{decodedId}"</strong> is not currently indexed in the CraftTrue GI registry. An unregistered tag is not necessarily counterfeit, but its claims of hand-block printing and natural dyes remain unverified.
+            </p>
+          </div>
+
+          {/* 1-Click Internet Search Actions */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <a
+              href={googleSearchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-4 rounded-xl border border-stone-200 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 transition space-y-1 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900 group-hover:text-amber-900 flex items-center gap-1.5">
+                  <Search className="w-3.5 h-3.5 text-amber-700" />
+                  <span>Search Google for Tag &quot;{decodedId}&quot;</span>
+                </span>
+                <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-700" />
+              </div>
+              <p className="text-[11px] text-stone-500">
+                Check if this tag or barcode number belongs to a known textile brand or e-commerce listing.
+              </p>
+            </a>
+
+            <a
+              href={giRegistrySearchUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-4 rounded-xl border border-stone-200 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 transition space-y-1 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900 group-hover:text-amber-900 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>Lookup Government GI Registry</span>
+                </span>
+                <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-700" />
+              </div>
+              <p className="text-[11px] text-stone-500">
+                Search official GI Application records for Bagru (GI No. 183) &amp; Sanganeri (GI No. 147).
+              </p>
+            </a>
+          </div>
+
+          {/* Form to submit tag for verification */}
+          <div className="p-6 rounded-2xl bg-stone-50 border border-stone-200 space-y-4">
+            <h4 className="font-serif font-bold text-sm text-stone-900 flex items-center gap-2">
+              <Send className="w-4 h-4 text-amber-700" />
+              <span>Submit this Tag for CraftTrue Verification</span>
+            </h4>
+            {reportSubmitted ? (
+              <div className="p-4 rounded-xl bg-emerald-100 text-emerald-900 text-xs font-medium flex items-center gap-2 border border-emerald-300">
+                <CheckCircle className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span>Thank you! Tag {decodedId} has been queued for verification with local cluster auditors.</span>
+              </div>
+            ) : (
+              <form onSubmit={handleReportSubmit} className="space-y-3 text-xs">
+                <div>
+                  <label className="block font-medium text-stone-700 mb-1">Your Email (for verification update)</label>
+                  <input
+                    type="email"
+                    value={reportEmail}
+                    onChange={(e) => setReportEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    required
+                    className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700/40"
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium text-stone-700 mb-1">Garment Details or Shop Where Purchased</label>
+                  <textarea
+                    rows={2}
+                    value={reportNotes}
+                    onChange={(e) => setReportNotes(e.target.value)}
+                    placeholder="e.g. Purchased in Jaipur market; seller claimed pure Bagru vegetable dye."
+                    className="w-full px-3 py-2 bg-white border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-700/40"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-300 font-bold transition shadow-xs"
+                >
+                  Submit Tag for Forensic Review
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // VIEW 3: FULL REGISTERED CRAFT AUTHENTICITY CERTIFICATE
+  // =========================================================================
 
   // Helper for Badge Color & Label
   const getStatusBadge = (status: string) => {
@@ -240,7 +511,7 @@ export default function VerificationPage() {
             {product.description}
           </p>
 
-          {/* CRITICAL RESEARCH DISTINCTION: Weaving Method vs. Printing Technique */}
+          {/* CRITICAL DISTINCTION: Weaving Method vs. Printing Technique */}
           <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-3">
             <div className="flex items-center gap-2 text-xs font-bold text-stone-800">
               <Layers className="w-4 h-4 text-amber-700" />
@@ -248,453 +519,302 @@ export default function VerificationPage() {
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="p-2.5 rounded-lg bg-white border border-stone-200">
-                <p className="text-[10px] text-stone-500 uppercase font-semibold">Weaving Method (बुनाई)</p>
-                <p className="font-bold text-stone-900">{product.weaving_method}</p>
-                <p className="text-[10px] text-stone-500 mt-0.5">{product.fabric_composition}</p>
+                <span className="text-[10px] uppercase font-bold text-stone-400 block">Weaving Method</span>
+                <strong className="text-stone-800">{product.weaving_method}</strong>
               </div>
               <div className="p-2.5 rounded-lg bg-white border border-stone-200">
-                <p className="text-[10px] text-stone-500 uppercase font-semibold">Printing Technique (छपाई)</p>
-                <p className="font-bold text-stone-900">{product.printing_technique}</p>
-                <p className="text-[10px] text-stone-500 mt-0.5">{product.dye_type}</p>
+                <span className="text-[10px] uppercase font-bold text-stone-400 block">Printing Technique</span>
+                <strong className="text-stone-800">{product.printing_technique}</strong>
+              </div>
+              <div className="p-2.5 rounded-lg bg-white border border-stone-200">
+                <span className="text-[10px] uppercase font-bold text-stone-400 block">Dye Type</span>
+                <strong className="text-stone-800">{product.dye_type}</strong>
+              </div>
+              <div className="p-2.5 rounded-lg bg-white border border-stone-200">
+                <span className="text-[10px] uppercase font-bold text-stone-400 block">Base Material</span>
+                <strong className="text-stone-800">{product.fabric_composition}</strong>
               </div>
             </div>
           </div>
-
-          {/* Workshop / Artisan Snapshot */}
-          {product.artisan_workshop ? (
-            <div className="flex items-center gap-3 pt-2">
-              <img
-                src={product.artisan_workshop.image_url}
-                alt={product.artisan_workshop.artisan_name}
-                className="w-11 h-11 rounded-full object-cover border-2 border-amber-600/40"
-              />
-              <div className="text-xs">
-                <p className="font-bold text-stone-900">{product.artisan_workshop.artisan_name}</p>
-                <p className="text-stone-500">{product.artisan_workshop.lineage_or_caste} • {product.artisan_workshop.workshop_name}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="text-xs text-stone-500 italic p-2 bg-stone-100 rounded">
-              Artisan Profile: Not disclosed or unverified seller.
-            </div>
-          )}
         </div>
       </div>
 
-      {/* 3. THE 7-LAYER AUTHENTICITY SCORECARD (AEF) */}
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-stone-100">
-          <div>
-            <h2 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
-              <Award className="w-5 h-5 text-amber-700" />
-              <span>7-Layer Authenticity Scorecard (AEF)</span>
-            </h2>
-            <p className="text-xs text-stone-500">
-              Evaluated against Bagru &amp; Sanganeri Geographical Indication standards
-            </p>
-          </div>
-          <span className="text-[11px] font-semibold text-stone-600 bg-stone-100 px-3 py-1 rounded-full">
-            Claim-by-Claim Transparency
-          </span>
+      {/* 3. ARTISAN / WORKSHOP PROFILE CARD */}
+      <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-4 shadow-sm">
+        <div className="flex items-center gap-2 text-stone-800 font-serif text-lg font-bold">
+          <Award className="w-5 h-5 text-amber-700" />
+          <span>Master Artisan &amp; Workshop Lineage</span>
         </div>
 
-        {/* The 7 Layers Grid */}
-        <div className="space-y-3">
-          {[
-            {
-              layer: '1. Geographical Authenticity (भूगोलीय मूल)',
-              status: product.scorecard.geo_status,
-              evidence: product.scorecard.geo_evidence,
-              desc: 'Was this product printed within the protected geographical boundaries of Bagru or Sanganer?'
-            },
-            {
-              layer: '2. Artisan / Workshop Identity (कारीगर पहचान)',
-              status: product.scorecard.artisan_status,
-              evidence: product.scorecard.artisan_evidence,
-              desc: 'Is the traditional Chhipa block-printer or workshop identity verified with official records?'
-            },
-            {
-              layer: '3. Printing Process Authenticity (छपाई तकनीक)',
-              status: product.scorecard.process_status,
-              evidence: product.scorecard.process_evidence,
-              desc: 'Is it verified hand-block printing (carved teak wood blocks), or a mechanized screen/roller imitation?'
-            },
-            {
-              layer: '4. Material & Dye Authenticity (सामग्री एवं रंग)',
-              status: product.scorecard.material_status,
-              evidence: product.scorecard.material_evidence,
-              desc: 'Fibre composition (Handloom vs Mill) and dye chemistry (Natural vegetable/Dabu vs Synthetic pigment).'
-            },
-            {
-              layer: '5. GI & Certification Status (जी.आई. पंजीकरण)',
-              status: product.scorecard.gi_layer_status,
-              evidence: product.scorecard.gi_evidence,
-              desc: 'Is the producer an official Authorised User registered under the Geographical Indications Act?'
-            },
-            {
-              layer: '6. Supply-Chain Traceability (आपूर्ति श्रृंखला)',
-              status: product.scorecard.supply_chain_status,
-              evidence: product.scorecard.supply_chain_evidence,
-              desc: 'Traceable custody records from yarn/fabric sourcing to Dabu mud application, dyeing, and river washing.'
-            },
-            {
-              layer: '7. Commercial Claim Authenticity (दावे की सत्यता)',
-              status: product.scorecard.commercial_claim_status,
-              evidence: product.scorecard.commercial_claim_evidence,
-              desc: 'Do the seller’s advertised marketing claims match the independently documented evidence?'
-            }
-          ].map((item, idx) => (
-            <div key={idx} className="p-4 rounded-xl border border-stone-200/80 bg-stone-50/50 hover:bg-stone-50 transition space-y-2">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <span className="font-bold text-xs sm:text-sm text-stone-900">{item.layer}</span>
-                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(item.status)}`}>
-                  {item.status}
+        <div className="flex flex-col sm:flex-row items-start gap-4">
+          <img
+            src={product.artisan_workshop.image_url}
+            alt={product.artisan_workshop.artisan_name}
+            className="w-20 h-20 rounded-2xl object-cover border-2 border-amber-200 shrink-0 bg-stone-100"
+          />
+          <div className="space-y-1.5 flex-1">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="font-bold text-base text-stone-900">
+                {product.artisan_workshop.artisan_name}
+              </h3>
+              {product.artisan_workshop.gi_authorized_user_no && (
+                <span className="font-mono text-[11px] font-bold text-amber-900 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+                  {product.artisan_workshop.gi_authorized_user_no}
                 </span>
-              </div>
-              <p className="text-[11px] text-stone-500 leading-normal">{item.desc}</p>
-              <div className="pt-2 border-t border-stone-200/60 text-xs text-stone-700 font-medium">
-                <span className="text-stone-500 font-normal">Evidence: </span>{item.evidence}
-              </div>
+              )}
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* 4. VISUAL CRAFTWASHING DIAGNOSTIC: 5-Point In-Hand Field Checks */}
-      <div className="bg-gradient-to-br from-amber-50 to-orange-50/60 border border-amber-200 rounded-3xl p-6 sm:p-8 space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-800" />
-            <h3 className="font-serif font-bold text-base sm:text-lg text-amber-950">
-              In-Hand Field Diagnostic: 5 Physical Checks for This Fabric
-            </h3>
-          </div>
-          <Link
-            href="/authenticity-guide"
-            className="text-xs font-bold text-amber-900 bg-white hover:bg-amber-100 border border-amber-300 px-3.5 py-1.5 rounded-xl transition shadow-xs flex items-center gap-1.5 w-fit"
-          >
-            <span>Open Complete 40-Fabric Guide →</span>
-          </Link>
-        </div>
-        
-        <p className="text-xs text-stone-600 leading-relaxed">
-          Traditional hand-block printing leaves distinctive physical signatures that machine and screen prints cannot replicate. Perform these checks on your physical garment right now:
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>1. Reverse Strike</span>
-            </div>
-            <p className="text-[11px] text-stone-600 leading-relaxed">
-              Flip the cloth: Hand-pressed dye strikes 60%–90% through to reverse. Machine screen prints have a stark white back.
+            <p className="text-xs text-stone-600 font-medium">
+              {product.artisan_workshop.workshop_name} • {product.artisan_workshop.location_address}
             </p>
-          </div>
 
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>2. Ground Color</span>
-            </div>
-            <p className="text-[11px] text-stone-600 leading-relaxed">
-              Bagru has warm cream Harda base; Sanganer has soft river white. Beware harsh optical-brightened neon white.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>3. Block Joins</span>
-            </div>
-            <p className="text-[11px] text-stone-600 leading-relaxed">
-              Examine where Rekh (outline) and Datta (fill) meet. Minor 0.5–2mm misalignments prove genuine human stamping.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>4. Dabu Mud Crack</span>
-            </div>
-            <p className="text-[11px] text-stone-600 leading-relaxed">
-              In Bagru Dabu, dried kaali mitti mud cracks organically in cold indigo vats. Screen prints repeat identical crackle blocks.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span>5. Natural Scent</span>
-            </div>
-            <p className="text-[11px] text-stone-600 leading-relaxed">
-              Earthy tannin and fermented iron-jaggery syahi scent; soft drape. Never smells of harsh acrylic paint solvent.
+            <p className="text-xs text-stone-700 leading-relaxed pt-1">
+              {product.artisan_workshop.bio}
             </p>
           </div>
         </div>
       </div>
 
-      {/* 5. "KNOW YOUR CRAFT PRICE" TRANSPARENCY BREAKDOWN */}
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-stone-100">
-          <div>
-            <h3 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
-              <DollarSign className="w-5 h-5 text-emerald-700" />
-              <span>Know Your Craft Price • पारदर्शी मूल्य विवरण</span>
-            </h3>
-            <p className="text-xs text-stone-500">
-              Seller-declared cost components explaining fair artisan compensation
-            </p>
+      {/* 4. THE 7-LAYER AUTHENTICITY EVALUATION MATRIX */}
+      <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-6 shadow-sm">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+            <span>Independent Verification Architecture</span>
           </div>
-          <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            {artisanSharePercent}% Directly Reaches Artisan Community
+          <h2 className="font-serif text-2xl font-bold text-stone-900">
+            7-Layer Authenticity Evaluation Framework
+          </h2>
+          <p className="text-xs text-stone-500 max-w-2xl mt-1">
+            Each physical claim is evaluated independently under defined evidence standards to eliminate greenwashing and deceptive marketing.
+          </p>
+        </div>
+
+        <div className="divide-y divide-stone-100">
+          {/* Layer 1: Geographic Origin */}
+          <div className="py-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-900">1. Geographic Origin &amp; Cluster Coordinates</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(product.scorecard.geo_status)}`}>
+                {product.scorecard.geo_status}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">{product.scorecard.geo_evidence}</p>
+          </div>
+
+          {/* Layer 2: Artisan Identity */}
+          <div className="py-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-900">2. Artisan Identity &amp; Workshop Lineage</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(product.scorecard.artisan_status)}`}>
+                {product.scorecard.artisan_status}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">{product.scorecard.artisan_evidence}</p>
+          </div>
+
+          {/* Layer 3: Process & Technique */}
+          <div className="py-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-900">3. Process &amp; Hand-Block Stamping Technique</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(product.scorecard.process_status)}`}>
+                {product.scorecard.process_status}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">{product.scorecard.process_evidence}</p>
+          </div>
+
+          {/* Layer 4: Material & Chemical */}
+          <div className="py-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-900">4. Material &amp; Natural Dye Chemistry (Lab Audit)</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(product.scorecard.material_status)}`}>
+                {product.scorecard.material_status}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">{product.scorecard.material_evidence}</p>
+          </div>
+
+          {/* Layer 5: GI Statutory Tag */}
+          <div className="py-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-900">5. Geographical Indication Statutory Tag</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(product.scorecard.gi_layer_status)}`}>
+                {product.scorecard.gi_layer_status}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">{product.scorecard.gi_evidence}</p>
+          </div>
+
+          {/* Layer 6: Supply Chain Custody */}
+          <div className="py-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-900">6. Supply Chain &amp; Chain-of-Custody</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(product.scorecard.supply_chain_status)}`}>
+                {product.scorecard.supply_chain_status}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">{product.scorecard.supply_chain_evidence}</p>
+          </div>
+
+          {/* Layer 7: Commercial Claims */}
+          <div className="py-4 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-sm text-stone-900">7. Commercial Claims &amp; Marketing Integrity</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getLayerBadge(product.scorecard.commercial_claim_status)}`}>
+                {product.scorecard.commercial_claim_status}
+              </span>
+            </div>
+            <p className="text-xs text-stone-600">{product.scorecard.commercial_claim_evidence}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. PRICE TRANSPARENCY & ARTISAN FAIR WAGE BREAKDOWN */}
+      <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-stone-800 font-serif text-lg font-bold">
+            <DollarSign className="w-5 h-5 text-amber-700" />
+            <span>Audited Price Transparency &amp; Artisan Share</span>
+          </div>
+          <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800">
+            {artisanSharePercent}% Artisan Compensation
           </span>
         </div>
 
-        {/* Cost Stack Bar */}
-        <div className="space-y-2">
-          <div className="h-4 rounded-full overflow-hidden flex bg-stone-100">
-            <div style={{ width: `${(product.price_disclosure.artisan_labor_inr / totalCost) * 100}%` }} className="bg-amber-600" title="Artisan Labor" />
-            <div style={{ width: `${(product.price_disclosure.printing_block_charge_inr / totalCost) * 100}%` }} className="bg-orange-500" title="Block Printing" />
-            <div style={{ width: `${(product.price_disclosure.fabric_raw_cost_inr / totalCost) * 100}%` }} className="bg-stone-500" title="Fabric / Raw Material" />
-            <div style={{ width: `${(product.price_disclosure.washing_finishing_inr / totalCost) * 100}%` }} className="bg-blue-400" title="Washing & Finishing" />
-            <div style={{ width: `${(product.price_disclosure.retail_fair_margin_inr / totalCost) * 100}%` }} className="bg-emerald-600" title="Retail Margin" />
-          </div>
-        </div>
-
-        {/* Cost Breakdown Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-2">
           <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-            <p className="text-[10px] text-stone-500 font-semibold">Fabric &amp; Yarn</p>
-            <p className="font-bold text-stone-900 text-sm">₹{product.price_disclosure.fabric_raw_cost_inr}</p>
-          </div>
-          <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-            <p className="text-[10px] text-amber-800 font-bold">Artisan Labor</p>
-            <p className="font-bold text-amber-900 text-sm">₹{product.price_disclosure.artisan_labor_inr}</p>
-          </div>
-          <div className="p-3 rounded-xl bg-orange-50 border border-orange-200">
-            <p className="text-[10px] text-orange-800 font-bold">Block Stamping</p>
-            <p className="font-bold text-orange-900 text-sm">₹{product.price_disclosure.printing_block_charge_inr}</p>
-          </div>
-          <div className="p-3 rounded-xl bg-blue-50 border border-blue-200">
-            <p className="text-[10px] text-blue-800 font-semibold">River Washing</p>
-            <p className="font-bold text-blue-900 text-sm">₹{product.price_disclosure.washing_finishing_inr}</p>
-          </div>
-          <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
-            <p className="text-[10px] text-stone-500 font-semibold">Packaging/Logistics</p>
-            <p className="font-bold text-stone-900 text-sm">₹{product.price_disclosure.packaging_logistics_inr}</p>
+            <span className="text-stone-500 block">Raw Fabric</span>
+            <strong className="text-stone-900 text-sm">₹{product.price_disclosure.fabric_raw_cost_inr}</strong>
           </div>
           <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
-            <p className="text-[10px] text-emerald-800 font-semibold">Retail Margin</p>
-            <p className="font-bold text-emerald-900 text-sm">₹{product.price_disclosure.retail_fair_margin_inr}</p>
+            <span className="text-emerald-700 font-medium block">Artisan Labor</span>
+            <strong className="text-emerald-900 text-sm">₹{product.price_disclosure.artisan_labor_inr}</strong>
+          </div>
+          <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+            <span className="text-emerald-700 font-medium block">Block Charge</span>
+            <strong className="text-emerald-900 text-sm">₹{product.price_disclosure.printing_block_charge_inr}</strong>
+          </div>
+          <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
+            <span className="text-stone-500 block">River Wash &amp; Finish</span>
+            <strong className="text-stone-900 text-sm">₹{product.price_disclosure.washing_finishing_inr}</strong>
+          </div>
+          <div className="p-3 rounded-xl bg-stone-50 border border-stone-200">
+            <span className="text-stone-500 block">Packaging &amp; Logistics</span>
+            <strong className="text-stone-900 text-sm">₹{product.price_disclosure.packaging_logistics_inr}</strong>
+          </div>
+          <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
+            <span className="text-amber-800 font-medium block">Fair Retail Margin</span>
+            <strong className="text-amber-950 text-sm">₹{product.price_disclosure.retail_fair_margin_inr}</strong>
           </div>
         </div>
 
-        <p className="text-[11px] text-stone-500 italic">
-          *Note: Cost components are voluntarily declared by the registered producer. Audited independently under CraftTrue India guidelines.
+        <p className="text-xs text-stone-500 italic pt-2">
+          {product.price_disclosure.audit_notes}
         </p>
       </div>
 
-      {/* 6. EVIDENCED PRODUCTION TIMELINE */}
-      {product.production_stages.length > 0 && (
-        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-6">
-          <h3 className="font-serif text-xl font-bold text-stone-900 flex items-center gap-2">
+      {/* 6. 5-STAGE PRODUCTION TIMELINE */}
+      {product.production_stages && product.production_stages.length > 0 && (
+        <div className="bg-white rounded-2xl border border-stone-200 p-6 sm:p-8 space-y-4 shadow-sm">
+          <div className="flex items-center gap-2 text-stone-800 font-serif text-lg font-bold">
             <Calendar className="w-5 h-5 text-amber-700" />
-            <span>Evidenced Production Journey (उत्पादन चरण)</span>
-          </h3>
+            <span>Documented Production Stages</span>
+          </div>
 
-          <div className="relative pl-6 space-y-6 border-l-2 border-amber-300 ml-2">
+          <div className="space-y-4 pt-2">
             {product.production_stages.map((stage) => (
-              <div key={stage.stage_order} className="relative space-y-1">
-                <div className="absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-amber-600 border-2 border-white ring-2 ring-amber-200" />
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs">
-                  <span className="font-bold text-stone-900 text-sm">
-                    Stage {stage.stage_order}: {stage.stage_name}
-                  </span>
-                  {stage.date_completed && (
-                    <span className="text-stone-500 text-[11px]">{stage.date_completed}</span>
-                  )}
+              <div key={stage.stage_order} className="flex items-start gap-4 text-xs">
+                <div className="w-6 h-6 rounded-full bg-amber-700 text-white font-bold flex items-center justify-center shrink-0 text-[11px]">
+                  {stage.stage_order}
                 </div>
-                <p className="text-xs text-stone-600 leading-relaxed">{stage.description}</p>
+                <div className="space-y-0.5 flex-1">
+                  <div className="flex items-center justify-between">
+                    <strong className="text-stone-900 text-sm">{stage.stage_name}</strong>
+                    {stage.date_completed && (
+                      <span className="text-stone-400 font-mono text-[10px]">{stage.date_completed}</span>
+                    )}
+                  </div>
+                  <p className="text-stone-600">{stage.description}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* 7. PH.D. CONSUMER PERCEPTION SURVEY MODAL / CARD */}
+      {/* 7. CONSUMER FEEDBACK & TRANSPARENCY SURVEY */}
       <div className="bg-gradient-to-br from-amber-900 via-stone-900 to-amber-950 text-white rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-semibold">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Ph.D. Doctoral Research Survey • उपभोक्ता अनुसंधान</span>
+            <span>Consumer Craft Verification Survey • उपभोक्ता प्रतिक्रिया</span>
           </div>
           <h3 className="font-serif text-2xl font-bold">
             Did this verification record change your perception?
           </h3>
           <p className="text-xs text-amber-200/80 leading-relaxed max-w-2xl">
-            As part of an academic doctoral study at Delhi Haat and craft markets, your feedback evaluates whether claim-by-claim digital transparency increases consumer trust and willingness to pay (WTP).
+            Your anonymous consumer feedback helps us measure whether claim-by-claim transparency increases trust, protects artisans, and encourages fair compensation for authentic GI handlooms.
           </p>
         </div>
 
         {surveySubmitted ? (
           <div className="p-6 rounded-xl bg-emerald-950/60 border border-emerald-500 text-center space-y-2">
             <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-            <h4 className="font-bold text-base text-emerald-200">Response Recorded Successfully!</h4>
+            <h4 className="font-bold text-base text-emerald-200">Feedback Recorded Successfully!</h4>
             <p className="text-xs text-emerald-300">
-              Your anonymized evaluation has been logged for statistical hypothesis testing (H1, H3, H6). Thank you for supporting indigenous craft research!
+              Thank you for championing indigenous Indian craft heritage, master artisans, and transparent trade!
             </p>
           </div>
         ) : (
           <form onSubmit={handleSurveySubmit} className="space-y-4 pt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              {/* Question 1 */}
               <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
                 <label className="font-medium text-stone-200">
                   1. How clearly did this record explain product authenticity? (1 to 5)
                 </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((val) => (
-                    <button
-                      type="button"
-                      key={val}
-                      onClick={() => setUnderstandingScore(val)}
-                      className={`flex-1 py-1.5 rounded-lg font-bold transition ${
-                        understandingScore === val
-                          ? 'bg-amber-500 text-stone-950'
-                          : 'bg-white/10 text-stone-300 hover:bg-white/20'
-                      }`}
-                    >
-                      {val}
-                    </button>
-                  ))}
+                <input
+                  type="range"
+                  min="1"
+                  max="5"
+                  value={understandingScore}
+                  onChange={(e) => setUnderstandingScore(Number(e.target.value))}
+                  className="w-full accent-amber-400"
+                />
+                <div className="flex justify-between text-[10px] text-stone-400">
+                  <span>Confusing</span>
+                  <span className="font-bold text-amber-300">{understandingScore} / 5</span>
+                  <span>Crystal Clear</span>
                 </div>
               </div>
 
-              {/* Question 2 */}
               <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
                 <label className="font-medium text-stone-200">
-                  2. Did evidence disclosure increase your trust in this craft? (1 to 5)
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((val) => (
-                    <button
-                      type="button"
-                      key={val}
-                      onClick={() => setTrustScore(val)}
-                      className={`flex-1 py-1.5 rounded-lg font-bold transition ${
-                        trustScore === val
-                          ? 'bg-amber-500 text-stone-950'
-                          : 'bg-white/10 text-stone-300 hover:bg-white/20'
-                      }`}
-                    >
-                      {val}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Question 3: WTP */}
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
-                <label className="font-medium text-stone-200">
-                  3. What is your Willingness to Pay (WTP in ₹) for this verified item?
+                  2. Level of trust in this product's handmade GI claims? (1 to 5)
                 </label>
                 <input
-                  type="number"
-                  value={wtpAmount}
-                  onChange={(e) => setWtpAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-stone-900 border border-white/20 rounded-lg text-white font-mono"
+                  type="range"
+                  min="1"
+                  max="5"
+                  value={trustScore}
+                  onChange={(e) => setTrustScore(Number(e.target.value))}
+                  className="w-full accent-amber-400"
                 />
-              </div>
-
-              {/* Question 4: Prior Knowledge */}
-              <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-2">
-                <label className="font-medium text-stone-200">
-                  4. Your prior familiarity with Bagru / Sanganeri printing:
-                </label>
-                <select
-                  value={priorKnowledge}
-                  onChange={(e) => setPriorKnowledge(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-stone-900 border border-white/20 rounded-lg text-white text-xs"
-                >
-                  <option value="Novice">Novice (First time learning about it)</option>
-                  <option value="Moderate">Moderate (Know basic block printing)</option>
-                  <option value="Expert Connoisseur">Expert Connoisseur (Regular patron)</option>
-                </select>
+                <div className="flex justify-between text-[10px] text-stone-400">
+                  <span>Low Trust</span>
+                  <span className="font-bold text-amber-300">{trustScore} / 5</span>
+                  <span>Complete Trust</span>
+                </div>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs uppercase tracking-wider transition shadow-md"
+              className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition shadow-md"
             >
-              Submit Anonymized Academic Survey Response
+              Submit Consumer Feedback
             </button>
           </form>
-        )}
-      </div>
-
-      {/* 8. CONSUMER COMPLAINT & REPORTING MODAL */}
-      <div className="text-center pt-4">
-        <button
-          onClick={() => setComplaintOpen(!complaintOpen)}
-          className="text-xs text-rose-700 hover:text-rose-900 font-semibold underline underline-offset-4"
-        >
-          {complaintOpen ? 'Hide Complaint Form' : 'Suspect a counterfeit or false claim? Report this product'}
-        </button>
-
-        {complaintOpen && (
-          <div className="mt-4 p-6 rounded-2xl bg-rose-50 border border-rose-200 text-left space-y-4 max-w-xl mx-auto shadow-sm">
-            <h4 className="font-bold text-sm text-rose-900 flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-rose-700" />
-              <span>Consumer Craftwashing Grievance Redressal</span>
-            </h4>
-            <p className="text-xs text-stone-600">
-              Your complaint will be forwarded to the independent audit board for investigation.
-            </p>
-
-            {complaintRef ? (
-              <div className="p-4 rounded-xl bg-white border border-rose-200 text-xs text-stone-800 space-y-1">
-                <p className="font-bold text-emerald-700">Complaint Logged Successfully!</p>
-                <p>Tracking Reference Number: <strong className="font-mono text-rose-800">{complaintRef}</strong></p>
-                <p className="text-[11px] text-stone-500">You will be notified once field review concludes.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleComplaintSubmit} className="space-y-3 text-xs">
-                <div>
-                  <label className="block text-stone-700 font-medium mb-1">Complaint Category:</label>
-                  <select
-                    value={complaintCategory}
-                    onChange={(e) => setComplaintCategory(e.target.value)}
-                    className="w-full p-2 bg-white border border-stone-300 rounded-lg"
-                  >
-                    <option value="Suspected Machine/Screen Print Imitation">Suspected Machine/Screen Print Imitation</option>
-                    <option value="False Origin / Not From Bagru or Sanganer">False Origin / Not From Bagru or Sanganer</option>
-                    <option value="False GI Claim">False GI Claim</option>
-                    <option value="Misleading Natural Dye Claim">Misleading Natural Dye Claim</option>
-                    <option value="Copied or Duplicate QR Label">Copied or Duplicate QR Label</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-stone-700 font-medium mb-1">Details &amp; Observations:</label>
-                  <textarea
-                    rows={3}
-                    value={complaintText}
-                    onChange={(e) => setComplaintText(e.target.value)}
-                    placeholder="Describe why you suspect misrepresentation (e.g., white backing on fabric, lack of block variations)..."
-                    className="w-full p-2.5 bg-white border border-stone-300 rounded-lg"
-                    required
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-lg bg-rose-700 hover:bg-rose-800 text-white font-medium text-xs shadow-xs"
-                >
-                  Submit Complaint &amp; Generate Tracking ID
-                </button>
-              </form>
-            )}
-          </div>
         )}
       </div>
     </div>

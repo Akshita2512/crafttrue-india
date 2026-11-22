@@ -21,7 +21,7 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: 'CRAFTTRUE INDIA | Authentic Indian Handicrafts & Handlooms',
-  description: 'QR-Based Digital Craft Authenticity & Traceability System for GI-Certified Rajasthani Hand-Block Printed Textiles. PhD Research Demo.',
+  description: 'India\'s Digital Craft Authenticity & Traceability Platform for GI-Certified Rajasthani Hand-Block Printed Textiles. Supporting Master Artisans & Transparent Fair Trade.',
   manifest: '/manifest.json',
   themeColor: '#92400e',
   appleWebApp: {

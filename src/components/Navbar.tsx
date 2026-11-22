@@ -30,24 +30,24 @@ export function Navbar() {
     { href: '/artisans', label: 'Master Artisans', icon: Award, badge: 'Chhipa Masters' },
     { href: '/artisan/register-product', label: 'Artisan Portal', icon: UserCheck, badge: 'Tag Generator' },
     { href: '/admin', label: 'Verifier Desk', icon: ShieldCheck, badge: 'AEF Audit' },
-    { href: '/research', label: 'Ph.D. Analytics', icon: BarChart3, badge: 'SPSS Export' },
+    { href: '/research', label: 'Craft Intelligence', icon: BarChart3, badge: 'Lab Data' },
   ];
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFFDF9]/95 backdrop-blur-md border-b border-amber-900/10 shadow-xs">
-      {/* Top Banner: Academic Research & Cluster GI Integrity Notice */}
+      {/* Top Banner: Cluster GI Integrity Notice */}
       <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-stone-900 text-amber-50 text-[11px] py-1.5 px-4 font-medium tracking-wide flex flex-wrap items-center justify-between">
         <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-300" />
             <span>
-              <strong>Ph.D. Research Prototype:</strong> Digital Verification &amp; Traceability for Bagru (GI No. 183) &amp; Sanganeri (GI No. 147) Hand-Block Textiles
+              <strong>Digital Craft Verification Platform:</strong> Traceability &amp; Authenticity System for Bagru (GI No. 183) &amp; Sanganeri (GI No. 147) Hand-Block Textiles
             </span>
           </div>
 
           <div className="hidden sm:flex items-center gap-3">
-            <span className="bg-amber-800 text-amber-200 px-2.5 py-0.5 rounded text-[10px] font-semibold border border-amber-700/50">
-              DEMO DATA — NOT REAL CERTIFICATION
+            <span className="bg-amber-800/80 text-amber-200 px-2.5 py-0.5 rounded text-[10px] font-semibold border border-amber-700/50">
+              GI-183 (BAGRU) • GI-147 (SANGANER)
             </span>
             <span className="text-[10px] text-amber-300/80">
               Indian GI Act 1999 • DPDP Act 2023
@@ -110,7 +110,7 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Persona Switcher (For Ph.D. Evaluation) */}
+          {/* Persona Switcher */}
           <div className="hidden lg:flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl border border-stone-200 text-xs shrink-0">
             <span className="text-[10px] text-stone-500 font-bold px-1.5 uppercase">Role:</span>
             <button

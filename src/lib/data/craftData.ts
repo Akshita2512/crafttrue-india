@@ -374,7 +374,7 @@ export const DEMO_PRODUCTS: CraftProduct[] = [
   }
 ];
 
-// 40-Fabric Empirical Research Dataset Summary (from user's PhD study)
+// 40-Fabric Empirical Cluster Dataset Summary
 export const RESEARCH_FABRIC_STUDY = {
   totalSamples: 40,
   authenticBagruCount: 16,

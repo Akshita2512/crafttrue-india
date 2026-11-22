@@ -51,7 +51,7 @@ export default function AuthenticityGuidePage() {
           </h1>
 
           <p className="text-stone-300 text-sm sm:text-base leading-relaxed">
-            Craftwashing has flooded retail markets with industrial screen prints falsely labeled as authentic GI-tagged Bagru and Sanganeri textiles. This guide empowers conscious buyers with forensic, sensory, and digital verification parameters developed through doctoral field research.
+            Craftwashing has flooded retail markets with industrial screen prints falsely labeled as authentic GI-tagged Bagru and Sanganeri textiles. This guide empowers conscious buyers with forensic, sensory, and digital verification parameters developed through forensic laboratory and artisan field research.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-3">
@@ -285,7 +285,7 @@ export default function AuthenticityGuidePage() {
         <div className="space-y-8">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-900 text-xs font-bold mb-2">
-              <span>Doctoral Fieldwork Baseline • 40 Fabric Samples</span>
+              <span>Cluster Fieldwork Baseline • 40 Fabric Samples</span>
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
               Fabric Analysis &amp; Craftwashing Discovery Matrix

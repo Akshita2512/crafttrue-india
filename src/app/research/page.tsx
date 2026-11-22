@@ -80,7 +80,7 @@ export default function ResearchAnalyticsPage() {
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-            <span>Doctoral Research Module • डॉक्टरेट अनुसंधान विश्लेषण</span>
+            <span>Craft Intelligence &amp; Forensic Analytics • हस्तशिल्प प्रामाणिकता विश्लेषण</span>
           </div>
           <h1 className="font-serif text-3xl font-bold text-stone-900">
             Empirical Authenticity &amp; Consumer Trust Analytics
@@ -115,7 +115,7 @@ export default function ResearchAnalyticsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <span className="text-xs uppercase font-bold tracking-widest text-amber-800">
-              Doctoral Fieldwork Baseline • 40 Retail Samples
+              Market Surveillance Study • 40 Retail Samples
             </span>
             <h2 className="font-serif text-2xl font-bold text-stone-900 mt-1">
               Fabric Analysis: 12.5% Craftwashing Contamination Rate
@@ -186,12 +186,12 @@ export default function ResearchAnalyticsPage() {
         </div>
       </div>
 
-      {/* 3. HYPOTHESIS TESTING PROGRESS MATRIX */}
+      {/* 3. QUALITY BENCHMARK PROGRESS MATRIX */}
       <div className="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-4">
         <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
           <TrendingUp className="w-5 h-5 text-amber-700" />
           <h3 className="font-serif font-bold text-lg text-stone-900">
-            Ph.D. Candidate Hypotheses Validation Matrix
+            Craft Authenticity &amp; Consumer Trust Validation Matrix
           </h3>
         </div>
 
@@ -200,7 +200,7 @@ export default function ResearchAnalyticsPage() {
             <thead className="bg-stone-50 border-b border-stone-200 text-stone-500 font-semibold uppercase text-[10px]">
               <tr>
                 <th className="p-3">Code</th>
-                <th className="p-3">Theoretical Hypothesis</th>
+                <th className="p-3">Core Validation Parameter</th>
                 <th className="p-3">Target Construct</th>
                 <th className="p-3">Pilot Trend</th>
                 <th className="p-3">Status</th>
