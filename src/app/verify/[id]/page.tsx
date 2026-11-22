@@ -360,46 +360,75 @@ export default function VerificationPage() {
         </div>
       </div>
 
-      {/* 4. VISUAL CRAFTWASHING DIAGNOSTIC: How to Spot the Difference */}
-      <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-6 sm:p-8 space-y-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-700" />
-          <h3 className="font-serif font-bold text-base sm:text-lg text-amber-950">
-            Visual Craftwashing Diagnostic: How to Inspect This Fabric
-          </h3>
+      {/* 4. VISUAL CRAFTWASHING DIAGNOSTIC: 5-Point In-Hand Field Checks */}
+      <div className="bg-gradient-to-br from-amber-50 to-orange-50/60 border border-amber-200 rounded-3xl p-6 sm:p-8 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-800" />
+            <h3 className="font-serif font-bold text-base sm:text-lg text-amber-950">
+              In-Hand Field Diagnostic: 5 Physical Checks for This Fabric
+            </h3>
+          </div>
+          <Link
+            href="/authenticity-guide"
+            className="text-xs font-bold text-amber-900 bg-white hover:bg-amber-100 border border-amber-300 px-3.5 py-1.5 rounded-xl transition shadow-xs flex items-center gap-1.5 w-fit"
+          >
+            <span>Open Complete 40-Fabric Guide →</span>
+          </Link>
         </div>
+        
         <p className="text-xs text-stone-600 leading-relaxed">
-          Traditional hand-block printing leaves distinctive physical signatures that machine and screen prints cannot replicate. Use these three checks:
+          Traditional hand-block printing leaves distinctive physical signatures that machine and screen prints cannot replicate. Perform these checks on your physical garment right now:
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
+          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
             <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600" />
-              <span>1. Registration Variations</span>
+              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>1. Reverse Strike</span>
             </div>
             <p className="text-[11px] text-stone-600 leading-relaxed">
-              Look closely where the outline (Rekh) and filler (Datta) meet. Small manual misalignments and minor overlap show the human hand at work. Flat, robotic alignment indicates screen print.
+              Flip the cloth: Hand-pressed dye strikes 60%–90% through to reverse. Machine screen prints have a stark white back.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5">
+          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
             <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600" />
-              <span>2. Reverse-Side Penetration</span>
+              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>2. Ground Color</span>
             </div>
             <p className="text-[11px] text-stone-600 leading-relaxed">
-              Flip the fabric over. Traditional hand stamping drives natural dye deep into the cotton fibres. If the back is stark white or pale, it was likely surface-printed by a machine.
+              Bagru has warm cream Harda base; Sanganer has soft river white. Beware harsh optical-brightened neon white.
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5">
+          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
             <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
-              <Check className="w-3.5 h-3.5 text-emerald-600" />
-              <span>3. Dabu Mud Veining</span>
+              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>3. Block Joins</span>
             </div>
             <p className="text-[11px] text-stone-600 leading-relaxed">
-              In Bagru Dabu textiles, the dried mud resist naturally cracks slightly during indigo vat immersion, leaving delicate spiderweb veins. Machine prints simulate this with artificial repetitive patterns.
+              Examine where Rekh (outline) and Datta (fill) meet. Minor 0.5–2mm misalignments prove genuine human stamping.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
+              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>4. Dabu Mud Crack</span>
+            </div>
+            <p className="text-[11px] text-stone-600 leading-relaxed">
+              In Bagru Dabu, dried kaali mitti mud cracks organically in cold indigo vats. Screen prints repeat identical crackle blocks.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white border border-amber-200 space-y-1.5 shadow-xs">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900">
+              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>5. Natural Scent</span>
+            </div>
+            <p className="text-[11px] text-stone-600 leading-relaxed">
+              Earthy tannin and fermented iron-jaggery syahi scent; soft drape. Never smells of harsh acrylic paint solvent.
             </p>
           </div>
         </div>
