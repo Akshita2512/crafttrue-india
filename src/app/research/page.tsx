@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { DEMO_SURVEYS } from '@/lib/data/craftData';
+import { DEMO_SURVEYS, RESEARCH_FABRIC_STUDY } from '@/lib/data/craftData';
 import { ResearchSurveyResponse } from '@/lib/types';
-import { BarChart3, Download, Sparkles, TrendingUp, CheckCircle, HelpCircle, FileSpreadsheet } from 'lucide-react';
+import { BarChart3, Download, Sparkles, TrendingUp, CheckCircle, HelpCircle, FileSpreadsheet, BookOpenCheck, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ResearchAnalyticsPage() {
   const [surveys, setSurveys] = useState<ResearchSurveyResponse[]>(DEMO_SURVEYS);
 
-  // Download CSV for SPSS / Excel / R
-  const exportToCSV = () => {
+  // 1. Download Survey CSV for SPSS / Excel / R
+  const exportSurveyCSV = () => {
     const headers = [
       'Respondent_ID',
       'Product_Code',
@@ -33,14 +34,35 @@ export default function ResearchAnalyticsPage() {
       s.willingness_to_pay_inr,
       `"${s.prior_block_print_knowledge}"`,
       `"${(s.feedback_notes || '').replace(/"/g, '""')}"`,
-      `"${s.created_at || '2026-10-21'}"`
+      `"${s.created_at || '2026-11-20'}"`
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `CRAFTTRUE_Ph.D._Survey_Data_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `CRAFTTRUE_Consumer_Trust_Study_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // 2. Download 40-Fabric Analysis CSV
+  const exportFabricAnalysisCSV = () => {
+    const headers = ['Sample_No', 'Cluster_Or_Type', 'Probable_Technique', 'Assessment_Verdict', 'Key_Authenticity_Indicators'];
+    const rows = RESEARCH_FABRIC_STUDY.sampleObservations.map(s => [
+      s.id,
+      `"${s.type}"`,
+      `"${s.technique}"`,
+      `"${s.result}"`,
+      `"${s.notes.replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `CRAFTTRUE_40_Fabric_Forensic_Analysis_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -51,7 +73,8 @@ export default function ResearchAnalyticsPage() {
   const avgTrust = (surveys.reduce((acc, s) => acc + s.trust_in_evidence, 0) / surveys.length).toFixed(1);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">
+      
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200">
         <div>
@@ -67,17 +90,76 @@ export default function ResearchAnalyticsPage() {
           </p>
         </div>
 
-        {/* 1-Click CSV Export for SPSS / R */}
-        <button
-          onClick={exportToCSV}
-          className="px-5 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition"
-        >
-          <FileSpreadsheet className="w-4 h-4" />
-          <span>Export Anonymized CSV (for SPSS / R / Excel)</span>
-        </button>
+        {/* 1-Click CSV Exports for SPSS / R */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={exportSurveyCSV}
+            className="px-4 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span>Export Survey CSV (SPSS/R)</span>
+          </button>
+
+          <button
+            onClick={exportFabricAnalysisCSV}
+            className="px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-amber-300 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export 40-Fabric Matrix CSV</span>
+          </button>
+        </div>
       </div>
 
-      {/* 4 CORE METRIC CARDS */}
+      {/* 1. 40-FABRIC RESEARCH STUDY BENCHMARK BANNER */}
+      <div className="bg-gradient-to-br from-amber-50 via-orange-50/40 to-white rounded-3xl p-6 sm:p-8 border-2 border-amber-300 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span className="text-xs uppercase font-bold tracking-widest text-amber-800">
+              Doctoral Fieldwork Baseline • 40 Retail Samples
+            </span>
+            <h2 className="font-serif text-2xl font-bold text-stone-900 mt-1">
+              Fabric Analysis: 12.5% Craftwashing Contamination Rate
+            </h2>
+            <p className="text-xs text-stone-600 mt-1 max-w-2xl">
+              Forensic analysis of 40 textile samples collected across retail shops and craft exhibitions in Jaipur revealed that 1 in 8 items marketed as traditional hand-block printing were industrial screen or digital imitations.
+            </p>
+          </div>
+
+          <Link
+            href="/authenticity-guide"
+            className="bg-amber-800 hover:bg-amber-900 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs shrink-0 w-fit"
+          >
+            <BookOpenCheck className="w-4 h-4" />
+            <span>View Full Field Guide</span>
+          </Link>
+        </div>
+
+        {/* 3 Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white p-5 rounded-2xl border border-emerald-200 shadow-2xs">
+            <span className="text-[10px] uppercase font-bold text-emerald-800">Authentic Bagru (GI-183)</span>
+            <p className="font-serif text-3xl font-extrabold text-stone-900 mt-1">16 <span className="text-sm font-normal text-stone-500">/ 40</span></p>
+            <p className="text-emerald-700 font-bold text-xs">40.0% of Market Sample</p>
+            <p className="text-[11px] text-stone-500 mt-1">Earthy tone, Harda cream base, iron syahi black, organic dabu crackle.</p>
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border border-sky-200 shadow-2xs">
+            <span className="text-[10px] uppercase font-bold text-sky-800">Authentic Sanganer (GI-147)</span>
+            <p className="font-serif text-3xl font-extrabold text-stone-900 mt-1">19 <span className="text-sm font-normal text-stone-500">/ 40</span></p>
+            <p className="text-sky-700 font-bold text-xs">47.5% of Market Sample</p>
+            <p className="text-[11px] text-stone-500 mt-1">Fine floral boota on river white base, delicate two-tone Rekh-Datta overlap.</p>
+          </div>
+
+          <div className="bg-white p-5 rounded-2xl border border-rose-200 shadow-2xs">
+            <span className="text-[10px] uppercase font-bold text-rose-800">Screen / Machine Imitation</span>
+            <p className="font-serif text-3xl font-extrabold text-rose-700 mt-1">5 <span className="text-sm font-normal text-stone-500">/ 40</span></p>
+            <p className="text-rose-700 font-bold text-xs">12.5% Craftwashing Rate</p>
+            <p className="text-[11px] text-stone-500 mt-1">Zero strike-through, mechanical uniformity, chemical acrylic odor.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. 4 CORE CONSUMER SURVEY METRIC CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-xs space-y-1">
           <p className="text-[11px] uppercase tracking-wider text-stone-500 font-semibold">Total Survey Responses</p>
@@ -104,8 +186,8 @@ export default function ResearchAnalyticsPage() {
         </div>
       </div>
 
-      {/* HYPOTHESIS TESTING PROGRESS MATRIX */}
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-4">
+      {/* 3. HYPOTHESIS TESTING PROGRESS MATRIX */}
+      <div className="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 sm:p-8 space-y-4">
         <div className="flex items-center gap-2 pb-3 border-b border-stone-100">
           <TrendingUp className="w-5 h-5 text-amber-700" />
           <h3 className="font-serif font-bold text-lg text-stone-900">
@@ -166,10 +248,10 @@ export default function ResearchAnalyticsPage() {
         </div>
       </div>
 
-      {/* RAW DATA LOG (ANONYMIZED) */}
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 space-y-4">
+      {/* 4. RAW SURVEY DATA LOG (ANONYMIZED) */}
+      <div className="bg-white rounded-3xl border border-stone-200 shadow-sm p-6 space-y-4">
         <h3 className="font-serif font-bold text-base text-stone-900">
-          Raw Survey Responses (Anonymized for Data Protection / DPDP Act)
+          Raw Survey Responses (Anonymized for Data Protection / DPDP Act 2023)
         </h3>
 
         <div className="overflow-x-auto">
@@ -201,6 +283,7 @@ export default function ResearchAnalyticsPage() {
           </table>
         </div>
       </div>
+
     </div>
   );
 }
