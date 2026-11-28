@@ -19,7 +19,8 @@ import {
   ExternalLink,
   LogIn,
   LogOut,
-  User
+  User,
+  Smartphone
 } from 'lucide-react';
 
 export function Navbar() {
@@ -40,6 +41,7 @@ export function Navbar() {
     },
     { href: '/admin', label: 'Verifier Desk', icon: ShieldCheck, badge: 'AEF Audit' },
     { href: '/research', label: 'Craft Intelligence', icon: BarChart3, badge: 'Lab Data' },
+    { href: '/download', label: 'Get Mobile App', icon: Smartphone, badge: 'APK / iOS' },
   ];
 
   return (
@@ -177,7 +179,16 @@ export function Navbar() {
           </div>
 
           {/* Mobile menu button & Quick Scan (Always visible on mobile viewports) */}
-          <div className="flex xl:hidden items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex xl:hidden items-center gap-1 sm:gap-2 shrink-0">
+            <Link
+              href="/download"
+              className="bg-amber-100/90 hover:bg-amber-200 text-amber-900 px-2 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 border border-amber-300 shadow-2xs transition"
+              title="Get Mobile App"
+            >
+              <Smartphone className="w-3.5 h-3.5 text-amber-800 shrink-0" />
+              <span className="text-[11px] font-bold">App</span>
+            </Link>
+
             <Link
               href="/scan"
               className="bg-amber-800 hover:bg-amber-900 active:scale-95 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
