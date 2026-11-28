@@ -25,10 +25,20 @@ export const metadata: Metadata = {
   description: 'India\'s Digital Craft Authenticity & Traceability Platform for GI-Certified Rajasthani Hand-Block Printed Textiles. Supporting Master Artisans & Transparent Fair Trade.',
   manifest: '/manifest.json',
   themeColor: '#92400e',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
+  },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'CraftTrue India',
+  },
+  formatDetection: {
+    telephone: false,
   },
   icons: {
     icon: '/icons/icon-192.png',

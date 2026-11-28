@@ -75,7 +75,13 @@ export default function ScanPage() {
       mediaStreamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.setAttribute('webkit-playsinline', 'true');
+        try {
+          await videoRef.current.play();
+        } catch (playErr) {
+          console.warn('Video play error:', playErr);
+        }
       }
       setIsCameraActive(true);
 
@@ -242,6 +248,7 @@ export default function ScanPage() {
               <video
                 ref={videoRef}
                 playsInline
+                autoPlay
                 muted
                 className="w-full h-full object-cover"
               />

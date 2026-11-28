@@ -8,18 +8,23 @@ import Link from 'next/link';
 
 export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [clusterFilter, setClusterFilter] = useState<'all' | 'bagru' | 'sanganer'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('featured');
 
   const filtered = mockProducts
     .filter((product) => {
       const matchesCategory = selectedCategory === 'all' || product.category_id === selectedCategory;
+      const matchesCluster = 
+        clusterFilter === 'all' || 
+        (clusterFilter === 'bagru' && product.heritage_origin.toLowerCase().includes('bagru')) ||
+        (clusterFilter === 'sanganer' && product.heritage_origin.toLowerCase().includes('sanganer'));
       const matchesSearch =
         product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.heritage_origin.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.material.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.artisan_name?.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesCluster && matchesSearch;
     })
     .sort((a, b) => {
       if (sortBy === 'price-low') return a.price_inr - b.price_inr;
@@ -61,6 +66,50 @@ export default function ProductsPage() {
             <span>Verify QR Tag</span>
           </Link>
         </div>
+      </div>
+
+      {/* Cluster GI Selector */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-bold text-stone-500 uppercase tracking-wide mr-1">Cluster GI:</span>
+        <button
+          onClick={() => setClusterFilter('all')}
+          className={`px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+            clusterFilter === 'all'
+              ? 'bg-stone-900 text-amber-300 shadow-xs'
+              : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
+          }`}
+        >
+          <span>All Clusters</span>
+          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-stone-700/60 text-stone-200">
+            {mockProducts.length}
+          </span>
+        </button>
+        <button
+          onClick={() => setClusterFilter('bagru')}
+          className={`px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+            clusterFilter === 'bagru'
+              ? 'bg-amber-900 text-amber-100 shadow-xs'
+              : 'bg-white border border-stone-200 text-stone-700 hover:bg-amber-50'
+          }`}
+        >
+          <span>Bagru (GI-183)</span>
+          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-800 text-amber-200">
+            {mockProducts.filter(p => p.heritage_origin.toLowerCase().includes('bagru')).length}
+          </span>
+        </button>
+        <button
+          onClick={() => setClusterFilter('sanganer')}
+          className={`px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
+            clusterFilter === 'sanganer'
+              ? 'bg-sky-900 text-sky-100 shadow-xs'
+              : 'bg-white border border-stone-200 text-stone-700 hover:bg-sky-50'
+          }`}
+        >
+          <span>Sanganer (GI-147)</span>
+          <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-sky-800 text-sky-200">
+            {mockProducts.filter(p => p.heritage_origin.toLowerCase().includes('sanganer')).length}
+          </span>
+        </button>
       </div>
 
       {/* Filter and Search Bar */}

@@ -72,33 +72,35 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <span className="text-base font-bold text-stone-900">
                 ₹{product.price_inr.toLocaleString('en-IN')}
               </span>
-              {product.compare_price_inr && (
-                <span className="text-xs text-stone-400 line-through">
-                  ₹{product.compare_price_inr.toLocaleString('en-IN')}
-                </span>
-              )}
+              <span className="text-[10px] text-stone-400 font-normal">
+                artisan benchmark
+              </span>
             </div>
-            <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded">
-              Verified Artisan Batch
+            <span className="text-[10px] text-amber-900 font-bold bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded">
+              Authentic GI Batch
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 pt-1">
             <Link
               href={`/verify/${product.id}`}
-              className="py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 transition"
+              className="py-2 bg-amber-800 hover:bg-amber-900 active:scale-95 text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition shadow-xs"
             >
-              <QrCode className="w-3.5 h-3.5 text-amber-700" />
-              <span>Verify QR</span>
+              <QrCode className="w-3.5 h-3.5 text-amber-200" />
+              <span>Verify Tag</span>
             </Link>
 
             <Link
-              href="/cart"
-              className="py-1.5 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-1 transition shadow-xs"
+              href={`/verify/${product.id}`}
+              className="py-2 bg-stone-50 hover:bg-amber-50 active:scale-95 text-stone-800 hover:text-amber-950 border border-stone-200 rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition"
             >
-              <span>Add to Cart</span>
-              <ArrowRight className="w-3 h-3" />
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+              <span>GI Evidence</span>
             </Link>
+          </div>
+
+          <div className="text-[9.5px] text-stone-500 text-center font-medium bg-stone-50/80 py-1 px-2 rounded-md border border-stone-200/60">
+            Traceability Registry • Direct Artisan Lineage Only
           </div>
         </div>
       </div>

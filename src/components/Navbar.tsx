@@ -4,16 +4,16 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUserRole } from '@/context/RoleContext';
-import { 
-  QrCode, 
-  ShieldCheck, 
-  UserCheck, 
-  BarChart3, 
-  Menu, 
-  X, 
-  Sparkles, 
-  ShoppingBag, 
-  Award, 
+import {
+  QrCode,
+  ShieldCheck,
+  UserCheck,
+  BarChart3,
+  Menu,
+  X,
+  Sparkles,
+  ShoppingBag,
+  Award,
   BookOpenCheck,
   Search,
   ExternalLink,
@@ -32,56 +32,56 @@ export function Navbar() {
     { href: '/scan', label: 'Scan & Verify', icon: QrCode, badge: 'Live Scanner' },
     { href: '/authenticity-guide', label: 'Authenticity Guide', icon: BookOpenCheck, badge: 'Field Tests', highlight: true },
     { href: '/artisans', label: 'Master Artisans', icon: Award, badge: 'Chhipa Masters' },
-    { 
-      href: '/artisan', 
-      label: role === 'artisan' ? 'Artisan Studio' : 'Artisan Portal', 
-      icon: UserCheck, 
-      badge: role === 'artisan' ? activeArtisan.cluster : 'Demo Access' 
+    {
+      href: '/artisan',
+      label: role === 'artisan' ? 'Artisan Studio' : 'Artisan Portal',
+      icon: UserCheck,
+      badge: role === 'artisan' ? activeArtisan.cluster : 'Demo Access'
     },
     { href: '/admin', label: 'Verifier Desk', icon: ShieldCheck, badge: 'AEF Audit' },
     { href: '/research', label: 'Craft Intelligence', icon: BarChart3, badge: 'Lab Data' },
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FFFDF9]/95 backdrop-blur-md border-b border-amber-900/10 shadow-xs">
+    <header className="sticky top-0 z-50 bg-[#FFFDF9]/95 backdrop-blur-md border-b border-amber-900/10 shadow-xs max-w-full overflow-hidden">
       {/* Top Banner: Cluster GI Integrity Notice */}
-      <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-stone-900 text-amber-50 text-[11px] py-1.5 px-4 font-medium tracking-wide flex flex-wrap items-center justify-between">
-        <div className="flex items-center gap-2 max-w-7xl mx-auto w-full justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>
-              <strong>Digital Craft Verification Platform:</strong> Traceability &amp; Authenticity System for Bagru (GI No. 183) &amp; Sanganeri (GI No. 147) Hand-Block Textiles
+      <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-stone-900 text-amber-50 text-[10px] sm:text-[11px] py-1 px-3 sm:px-4 font-medium tracking-wide">
+        <div className="flex items-center justify-between max-w-7xl mx-auto w-full gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+            <span className="truncate">
+              <strong>GI Registry:</strong> Bagru (GI-183) &amp; Sanganer (GI-147) Handloom Verification
             </span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-3">
-            <span className="bg-amber-800/80 text-amber-200 px-2.5 py-0.5 rounded text-[10px] font-semibold border border-amber-700/50">
-              GI-183 (BAGRU) • GI-147 (SANGANER)
+          <div className="hidden sm:flex items-center gap-3 shrink-0">
+            <span className="bg-amber-800/80 text-amber-200 px-2 py-0.5 rounded text-[10px] font-semibold border border-amber-700/50">
+              GI-183 • GI-147
             </span>
             <span className="text-[10px] text-amber-300/80">
-              Indian GI Act 1999 • DPDP Act 2023
+              Indian GI Act 1999
             </span>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
-          
-          {/* Brand Logo */}
-          <Link href="/" className="flex items-center gap-3 group shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-800 via-amber-900 to-stone-950 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-amber-500/30">
-              <span className="font-serif text-amber-300 font-extrabold text-lg tracking-wider">CT</span>
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
+
+          {/* Brand Logo - Fully responsive so it never pushes the menu button off-screen */}
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group shrink min-w-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-800 via-amber-900 to-stone-950 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-amber-500/30 shrink-0">
+              <span className="font-serif text-amber-300 font-extrabold text-base sm:text-lg tracking-wider">CT</span>
             </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-serif font-black text-lg sm:text-xl text-stone-900 tracking-tight">CRAFTTRUE</span>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-amber-800 px-1.5 py-0.5 bg-amber-100 rounded border border-amber-200">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                <span className="font-serif font-black text-base sm:text-lg text-stone-900 tracking-tight">CRAFTTRUE</span>
+                <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-widest text-amber-800 px-1 py-0.2 sm:px-1.5 sm:py-0.5 bg-amber-100 rounded border border-amber-200 shrink-0">
                   INDIA
                 </span>
               </div>
-              <p className="text-[10px] text-stone-500 font-medium tracking-wide -mt-0.5">
-                Rajasthan Handloom &amp; GI Block-Print Registry
+              <p className="text-[9px] text-stone-500 font-medium tracking-tight -mt-0.5 truncate hidden sm:block">
+                Rajasthan Handloom &amp; GI Registry
               </p>
             </div>
           </Link>
@@ -95,22 +95,20 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${isActive
                       ? 'bg-amber-100 text-amber-950 font-bold shadow-xs border border-amber-200'
                       : link.highlight
-                      ? 'text-amber-800 bg-amber-50/80 hover:bg-amber-100 font-bold border border-amber-200/60'
-                      : 'text-stone-700 hover:text-amber-900 hover:bg-amber-50'
-                  }`}
+                        ? 'text-amber-800 bg-amber-50/80 hover:bg-amber-100 font-bold border border-amber-200/60'
+                        : 'text-stone-700 hover:text-amber-900 hover:bg-amber-50'
+                    }`}
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-amber-800' : 'text-stone-500'}`} />
                   <span>{link.label}</span>
                   {link.badge && (
-                    <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-medium ${
-                      link.highlight 
-                        ? 'bg-amber-800 text-white' 
+                    <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-medium ${link.highlight
+                        ? 'bg-amber-800 text-white'
                         : 'bg-stone-200 text-stone-700'
-                    }`}>
+                      }`}>
                       {link.badge}
                     </span>
                   )}
@@ -126,21 +124,19 @@ export function Navbar() {
               <span className="text-[10px] text-stone-500 font-bold px-1.5 uppercase">Role:</span>
               <button
                 onClick={() => logoutToConsumer()}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
-                  role === 'consumer'
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${role === 'consumer'
                     ? 'bg-white text-stone-900 shadow-xs font-bold'
                     : 'text-stone-600 hover:text-stone-900'
-                }`}
+                  }`}
               >
                 Consumer
               </button>
               <button
                 onClick={() => loginAsArtisan('lalchand')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${
-                  role === 'artisan'
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition ${role === 'artisan'
                     ? 'bg-amber-800 text-white shadow-xs font-bold'
                     : 'text-stone-600 hover:text-stone-900'
-                }`}
+                  }`}
               >
                 Artisan {role === 'artisan' && `(${activeArtisan.cluster})`}
               </button>
@@ -180,22 +176,23 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex xl:hidden items-center gap-2">
+          {/* Mobile menu button & Quick Scan (Always visible on mobile viewports) */}
+          <div className="flex xl:hidden items-center gap-1.5 sm:gap-2 shrink-0">
             <Link
               href="/scan"
-              className="bg-amber-800 text-white p-2 rounded-xl text-xs font-bold flex items-center gap-1.5"
+              className="bg-amber-800 hover:bg-amber-900 active:scale-95 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition"
+              title="Scan Tag"
             >
-              <QrCode className="w-4 h-4" />
+              <QrCode className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Scan QR</span>
             </Link>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-stone-700 hover:bg-stone-100"
-              aria-label="Toggle Menu"
+              className="p-2 rounded-xl text-stone-800 hover:bg-amber-50 active:scale-95 transition border border-stone-200/80 bg-stone-50"
+              aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5 text-amber-900" /> : <Menu className="w-5 h-5 text-stone-800" />}
             </button>
           </div>
 
@@ -214,11 +211,10 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold ${
-                    isActive 
-                      ? 'bg-amber-100 text-amber-950 font-bold' 
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold ${isActive
+                      ? 'bg-amber-100 text-amber-950 font-bold'
                       : 'text-stone-700 hover:bg-stone-50'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-3">
                     <Icon className="w-4 h-4 text-amber-800" />
@@ -285,9 +281,8 @@ export function Navbar() {
                     logoutToConsumer();
                     setMobileMenuOpen(false);
                   }}
-                  className={`px-2 py-1 rounded text-[11px] font-semibold ${
-                    role === 'consumer' ? 'bg-amber-200 text-amber-950' : 'bg-stone-100 text-stone-600'
-                  }`}
+                  className={`px-2 py-1 rounded text-[11px] font-semibold ${role === 'consumer' ? 'bg-amber-200 text-amber-950' : 'bg-stone-100 text-stone-600'
+                    }`}
                 >
                   Consumer
                 </button>
@@ -296,9 +291,8 @@ export function Navbar() {
                     loginAsArtisan('lalchand');
                     setMobileMenuOpen(false);
                   }}
-                  className={`px-2 py-1 rounded text-[11px] font-semibold ${
-                    role === 'artisan' ? 'bg-amber-800 text-white' : 'bg-stone-100 text-stone-600'
-                  }`}
+                  className={`px-2 py-1 rounded text-[11px] font-semibold ${role === 'artisan' ? 'bg-amber-800 text-white' : 'bg-stone-100 text-stone-600'
+                    }`}
                 >
                   Artisan Studio
                 </button>
