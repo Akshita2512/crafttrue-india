@@ -5,6 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { MobileBottomNav } from '@/components/MobileBottomNav';
 import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
+import { InstallPrompt } from '@/components/InstallPrompt';
 import { RoleProvider } from '@/context/RoleContext';
 
 // Configure Luxury Artisanal Fonts
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/icons/icon-192.png',
-    apple: '/icons/icon-192.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -56,6 +57,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col antialiased bg-[#FAF8F5] text-stone-900 font-sans pb-16 md:pb-0">
         <RoleProvider>
           <ServiceWorkerRegistration />
+          <InstallPrompt />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />
