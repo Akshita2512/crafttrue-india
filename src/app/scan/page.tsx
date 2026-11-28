@@ -36,9 +36,9 @@ export default function ScanPage() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [detectedResult, setDetectedResult] = useState<string | null>(null);
-  const [detectedType, setDetectedType] = useState<'gi_tag' | 'paytm_upi' | 'external_url' | 'barcode'>('gi_tag');
+  const [detectedType, setDetectedType] = useState<'gi_tag' | 'artisan_upi' | 'external_url' | 'barcode'>('gi_tag');
 
-  // Paytm-style camera controls
+  // Camera controls
   const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
   const [isTorchOn, setIsTorchOn] = useState(false);
   const [torchSupported, setTorchSupported] = useState(false);
@@ -50,8 +50,8 @@ export default function ScanPage() {
   const animationFrameRef = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Paytm-Style Audio Feedback Chime (Web Audio API Synthesizer)
-  const playPaytmChime = useCallback(() => {
+  // Optical Verification Audio Feedback Chime (Web Audio API Synthesizer)
+  const playVerificationChime = useCallback(() => {
     if (!soundEnabled) return;
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -70,7 +70,7 @@ export default function ScanPage() {
       osc1.start(ctx.currentTime);
       osc1.stop(ctx.currentTime + 0.12);
 
-      // Tone 2: 1760Hz (A6) - High crisp Paytm-style confirmation bell
+      // Tone 2: 1760Hz (A6) - High crisp confirmation bell
       const osc2 = ctx.createOscillator();
       const gain2 = ctx.createGain();
       osc2.type = 'triangle';
@@ -157,7 +157,7 @@ export default function ScanPage() {
     }
   };
 
-  // Toggle Torch (Paytm Flashlight feature)
+  // Toggle Torch Flashlight feature
   const toggleTorch = async () => {
     if (!mediaStreamRef.current) return;
     const track = mediaStreamRef.current.getVideoTracks()[0];
@@ -264,8 +264,8 @@ export default function ScanPage() {
     setDetectedResult(code);
     setIsProcessing(true);
 
-    // Play Paytm-style crisp audio confirmation chime
-    playPaytmChime();
+    // Play crisp audio confirmation chime
+    playVerificationChime();
 
     // Haptic double vibration
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
@@ -274,8 +274,8 @@ export default function ScanPage() {
 
     // Classify scan type
     const trimmed = code.trim();
-    if (trimmed.startsWith('upi://') || trimmed.includes('paytm.me') || trimmed.toLowerCase().includes('paytm')) {
-      setDetectedType('paytm_upi');
+    if (trimmed.startsWith('upi://') || trimmed.includes('@upi') || trimmed.includes('paytm.me')) {
+      setDetectedType('artisan_upi');
     } else if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
       setDetectedType('external_url');
     } else if (trimmed.includes('BAGRU') || trimmed.includes('SGR') || trimmed.includes('CTI')) {
@@ -381,20 +381,20 @@ export default function ScanPage() {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
           <QrCode className="w-3.5 h-3.5 text-amber-700" />
-          <span>Paytm-Grade Instant QR Scanner • प्रामाणिकता स्कैनर</span>
+          <span>Optical Precision QR Scanner • प्रामाणिकता स्कैनर</span>
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
-          Scan Handloom QR Tag or Paytm Code
+          Scan Handloom QR Tag, Barcode, or Artisan UPI
         </h1>
         <p className="text-sm text-stone-600 max-w-xl mx-auto leading-relaxed">
-          High-speed optical verification for <strong>Bagru (GI No. 183)</strong>, <strong>Sanganeri (GI No. 147)</strong>, e-commerce barcodes, and Paytm artisan UPI tags.
+          High-speed optical verification for <strong>Bagru (GI No. 183)</strong>, <strong>Sanganeri (GI No. 147)</strong>, e-commerce barcodes, and direct artisan UPI tags.
         </p>
       </div>
 
-      {/* Main Paytm-Style Scanner Card */}
+      {/* Main Optical Scanner Card */}
       <div className="bg-white rounded-3xl border-2 border-amber-200/80 shadow-xl p-4 sm:p-6 space-y-6">
         
-        {/* PAYTM-STYLE VIEWFINDER VIEWPORT */}
+        {/* OPTICAL VIEWFINDER VIEWPORT */}
         <div className="relative rounded-2xl overflow-hidden bg-stone-950 aspect-4/3 sm:aspect-16/10 flex flex-col items-center justify-center text-white border border-stone-800 shadow-inner">
           
           {/* Active Live Video Stream */}
@@ -408,7 +408,7 @@ export default function ScanPage() {
                 className="w-full h-full object-cover"
               />
 
-              {/* PAYTM-STYLE ILLUMINATED TARGETING RETICLE */}
+              {/* ILLUMINATED TARGETING RETICLE */}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 {/* Dark Vignette Overlay outside frame */}
                 <div className="relative w-64 h-64 sm:w-72 sm:h-72">
@@ -422,7 +422,7 @@ export default function ScanPage() {
                   {/* Bottom-Right Corner Bracket */}
                   <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-amber-400 rounded-br-xl shadow-[0_0_8px_#f59e0b]" />
 
-                  {/* Paytm-Style Sweeping Laser Beam */}
+                  {/* High-Precision Sweeping Laser Beam */}
                   <div className="absolute inset-x-2 top-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_15px_#f59e0b] animate-[bounce_2s_infinite]" />
 
                   {/* Center Target Indicator */}
@@ -453,7 +453,7 @@ export default function ScanPage() {
                 </button>
               </div>
 
-              {/* PAYTM-STYLE IN-CAMERA TOOLBAR CONTROLS */}
+              {/* IN-CAMERA TOOLBAR CONTROLS */}
               <div className="absolute bottom-3 inset-x-4 flex items-center justify-center gap-3 pointer-events-auto">
                 {/* Torch Toggle */}
                 {torchSupported && (
@@ -518,7 +518,7 @@ export default function ScanPage() {
               <div className="w-16 h-16 rounded-full border-4 border-amber-400 border-t-transparent animate-spin mx-auto shadow-lg" />
               <div className="space-y-1">
                 <span className="inline-block px-3 py-0.5 rounded-full bg-amber-400 text-stone-950 text-xs font-bold shadow-xs">
-                  {detectedType === 'paytm_upi' ? 'Paytm / UPI Merchant Code Detected' : 'Verified QR Captured'}
+                  {detectedType === 'artisan_upi' ? 'Direct Artisan UPI Code Detected' : 'Verified QR Captured'}
                 </span>
                 <p className="font-mono text-sm text-amber-200 font-bold truncate max-w-xs mx-auto">
                   {detectedResult}
@@ -532,9 +532,9 @@ export default function ScanPage() {
                 <Camera className="w-8 h-8" />
               </div>
               <div className="space-y-1">
-                <p className="font-bold text-base text-white">Tap to Open Paytm-Style Scanner</p>
+                <p className="font-bold text-base text-white">Tap to Open Precision Scanner</p>
                 <p className="text-xs text-stone-300 leading-relaxed">
-                  Fast camera recognition with instant chime feedback for GI tags, barcodes, and Paytm UPI codes.
+                  Fast camera recognition with instant chime feedback for GI tags, barcodes, and direct artisan UPI codes.
                 </p>
               </div>
 
@@ -574,11 +574,11 @@ export default function ScanPage() {
         <div className="relative flex items-center justify-center">
           <div className="border-t border-stone-200 w-full" />
           <span className="bg-white px-3 text-xs uppercase tracking-wider text-stone-500 font-bold absolute">
-            or search tag, barcode, or paytm / web link
+            or search tag, barcode, or direct upi link
           </span>
         </div>
 
-        {/* Manual Code / URL / Paytm UPI Input Form */}
+        {/* Manual Code / URL / Artisan UPI Input Form */}
         <form onSubmit={handleSearchSubmit} className="space-y-3">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -587,7 +587,7 @@ export default function ScanPage() {
                 type="text"
                 value={productCodeInput}
                 onChange={(e) => setProductCodeInput(e.target.value)}
-                placeholder="Paste GI Tag ID, Paytm UPI link, or Barcode (e.g. BAGRU-LCD-F001 or paytm.me/...)"
+                placeholder="Paste GI Tag ID, Artisan UPI link, or Barcode (e.g. BAGRU-LCD-F001 or upi://pay...)"
                 className="w-full pl-10 pr-4 py-3 bg-stone-50 border border-stone-300 rounded-xl text-sm font-sans focus:outline-none focus:ring-2 focus:ring-amber-700/40 focus:bg-white"
               />
             </div>
@@ -600,7 +600,7 @@ export default function ScanPage() {
             </button>
           </div>
           <p className="text-[11px] text-stone-500 italic">
-            Supports official CraftTrue tags, Paytm UPI strings, external merchant URLs, and GI Registry numbers (GI-183, GI-147).
+            Supports official CraftTrue tags, Artisan UPI strings, external merchant URLs, and GI Registry numbers (GI-183, GI-147).
           </p>
         </form>
       </div>
@@ -629,7 +629,7 @@ export default function ScanPage() {
           <button
             type="button"
             onClick={() => {
-              playPaytmChime();
+              playVerificationChime();
               navigateToVerification('BAGRU-LCD-F001');
             }}
             className="text-left p-5 rounded-2xl border border-emerald-300 bg-emerald-50/60 hover:bg-emerald-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
@@ -653,7 +653,7 @@ export default function ScanPage() {
           <button
             type="button"
             onClick={() => {
-              playPaytmChime();
+              playVerificationChime();
               navigateToVerification('SGR-BBU-F001');
             }}
             className="text-left p-5 rounded-2xl border border-sky-300 bg-sky-50/60 hover:bg-sky-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
@@ -677,7 +677,7 @@ export default function ScanPage() {
           <button
             type="button"
             onClick={() => {
-              playPaytmChime();
+              playVerificationChime();
               navigateToVerification('CTI-MIS-000305');
             }}
             className="text-left p-5 rounded-2xl border border-rose-300 bg-rose-50/60 hover:bg-rose-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
@@ -697,27 +697,27 @@ export default function ScanPage() {
             </p>
           </button>
 
-          {/* Preset D: Paytm / UPI QR Code Test */}
+          {/* Preset D: Direct Artisan UPI QR Code Test */}
           <button
             type="button"
             onClick={() => {
-              playPaytmChime();
-              navigateToVerification('upi://pay?pa=lalchand.derawala@paytm&pn=Master%20Lalchand%20Chippa&mc=5999&tid=BAGRU183');
+              playVerificationChime();
+              navigateToVerification('upi://pay?pa=lalchand.derawala@upi&pn=Master%20Lalchand%20Chippa&mc=5999&tid=BAGRU183');
             }}
             className="text-left p-5 rounded-2xl border border-cyan-300 bg-cyan-50/60 hover:bg-cyan-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-700 text-white flex items-center gap-1">
                 <Sparkles className="w-3 h-3" />
-                PAYTM / UPI ARTISAN QR
+                DIRECT ARTISAN UPI QR
               </span>
               <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-cyan-900">
-                Test Paytm UPI →
+                Test Artisan UPI →
               </span>
             </div>
-            <h4 className="font-bold text-sm text-stone-900">Paytm Artisan Merchant Soundbox QR</h4>
+            <h4 className="font-bold text-sm text-stone-900">Master Artisan Direct UPI Soundbox QR</h4>
             <p className="text-xs text-stone-600">
-              Simulate scanning a Paytm merchant QR tag from an artisan workshop in Laxmi Nath Chowk, Bagru.
+              Simulate scanning a verified direct-pay UPI soundbox QR tag from an artisan workshop in Laxmi Nath Chowk, Bagru.
             </p>
           </button>
 

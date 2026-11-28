@@ -106,9 +106,9 @@ export default function VerificationPage() {
   };
 
   // =========================================================================
-  // VIEW: SCANNED PAYTM / UPI MERCHANT QR CODE
+  // VIEW: SCANNED DIRECT ARTISAN UPI PAYMENT QR CODE
   // =========================================================================
-  const isUpi = decodedId.startsWith('upi://') || decodedId.toLowerCase().includes('paytm');
+  const isUpi = decodedId.startsWith('upi://') || decodedId.toLowerCase().includes('@upi');
   if (isUpi) {
     let merchantName = 'Master Artisan Direct Account';
     let vpa = decodedId;
@@ -135,7 +135,7 @@ export default function VerificationPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-100 text-cyan-900 text-xs font-bold border border-cyan-300">
               <Sparkles className="w-3.5 h-3.5 text-cyan-700" />
-              <span>Paytm / UPI Artisan Merchant QR Verified • सीधा कारीगर खाता</span>
+              <span>Direct Artisan UPI Payment Verified • सीधा कारीगर खाता</span>
             </div>
             <span className="text-xs font-mono font-bold text-stone-600 bg-stone-100 px-3 py-1 rounded-full border">
               VPA: {vpa}
@@ -147,7 +147,7 @@ export default function VerificationPage() {
               {merchantName}
             </h1>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
-              This is an official Paytm / UPI payment QR code linked to a registered Chhipa hand-block artisan workshop in Rajasthan. Scanning enables 100% direct fair payment without middleman commission deductions.
+              This is a verified direct-to-artisan UPI payment QR code linked to a registered Chhipa hand-block artisan workshop in Rajasthan. Scanning enables 100% direct fair payment without middleman commission deductions.
             </p>
           </div>
 
@@ -161,7 +161,7 @@ export default function VerificationPage() {
               href={decodedId.startsWith('upi://') ? decodedId : `upi://pay?pa=${vpa}&pn=${encodeURIComponent(merchantName)}`}
               className="px-6 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-800 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition shrink-0 w-full sm:w-auto"
             >
-              <span>Pay Artisan Directly on Paytm / UPI</span>
+              <span>Pay Master Artisan Directly via UPI (Zero Commission)</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
