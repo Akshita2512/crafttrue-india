@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import jsQR from 'jsqr';
 import { 
   QrCode, 
   Search, 
@@ -12,14 +13,19 @@ import {
   ArrowRight, 
   ShieldAlert, 
   Sparkles, 
-  BookOpenCheck,
-  Upload,
-  Globe,
-  ExternalLink,
-  ShieldCheck,
-  Layers,
-  RefreshCw,
-  VideoOff
+  BookOpenCheck, 
+  Upload, 
+  Globe, 
+  ExternalLink, 
+  ShieldCheck, 
+  Layers, 
+  RefreshCw, 
+  VideoOff, 
+  Zap, 
+  ZapOff, 
+  Volume2, 
+  VolumeX, 
+  Image as ImageIcon 
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -30,18 +36,58 @@ export default function ScanPage() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [detectedResult, setDetectedResult] = useState<string | null>(null);
-  const [hasBarcodeDetector, setHasBarcodeDetector] = useState(false);
+  const [detectedType, setDetectedType] = useState<'gi_tag' | 'paytm_upi' | 'external_url' | 'barcode'>('gi_tag');
+
+  // Paytm-style camera controls
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [isTorchOn, setIsTorchOn] = useState(false);
+  const [torchSupported, setTorchSupported] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if browser has native BarcodeDetector API (Android Chrome, PWA)
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
-      setHasBarcodeDetector(true);
+  // Paytm-Style Audio Feedback Chime (Web Audio API Synthesizer)
+  const playPaytmChime = useCallback(() => {
+    if (!soundEnabled) return;
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+
+      // Tone 1: 880Hz (A5)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(880, ctx.currentTime);
+      gain1.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(ctx.currentTime);
+      osc1.stop(ctx.currentTime + 0.12);
+
+      // Tone 2: 1760Hz (A6) - High crisp Paytm-style confirmation bell
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(1760, ctx.currentTime + 0.09);
+      gain2.gain.setValueAtTime(0.25, ctx.currentTime + 0.09);
+      gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(ctx.currentTime + 0.09);
+      osc2.stop(ctx.currentTime + 0.38);
+    } catch {
+      // AudioContext fallback
     }
+  }, [soundEnabled]);
+
+  // Clean up camera on unmount
+  useEffect(() => {
     return () => {
       stopCamera();
     };
@@ -53,26 +99,43 @@ export default function ScanPage() {
       animationFrameRef.current = null;
     }
     if (mediaStreamRef.current) {
-      mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current.getTracks().forEach(track => {
+        track.stop();
+      });
       mediaStreamRef.current = null;
     }
     setIsCameraActive(false);
+    setIsTorchOn(false);
   };
 
-  const startCamera = async () => {
+  const startCamera = async (mode: 'environment' | 'user' = facingMode) => {
     setCameraError(null);
     setDetectedResult(null);
+    stopCamera();
+
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setCameraError('Camera access is not supported by your browser. Please use manual search or file upload.');
+        setCameraError('Camera access is not supported by your browser. Please use manual search or photo upload.');
         return;
       }
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+        video: {
+          facingMode: { ideal: mode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       });
 
       mediaStreamRef.current = stream;
+
+      // Check Torch capability
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        const capabilities = (videoTrack.getCapabilities && videoTrack.getCapabilities()) || {};
+        setTorchSupported(Boolean((capabilities as any).torch));
+      }
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.setAttribute('playsinline', 'true');
@@ -80,71 +143,158 @@ export default function ScanPage() {
         try {
           await videoRef.current.play();
         } catch (playErr) {
-          console.warn('Video play error:', playErr);
+          console.warn('Video play caught:', playErr);
         }
       }
       setIsCameraActive(true);
 
-      // Start continuous barcode detection
-      if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
-        startContinuousDetection();
-      }
+      // Start Dual-Engine Detection (BarcodeDetector + jsQR fallback for iPhone iOS)
+      startContinuousDetection();
     } catch (err: any) {
       console.warn('Camera stream error:', err);
-      setCameraError('Camera access was denied or is unavailable. You can upload an image or type the tag/barcode below.');
+      setCameraError('Camera access was denied or is unavailable. Please grant permission, or upload a tag image / search below.');
       setIsCameraActive(false);
     }
   };
 
+  // Toggle Torch (Paytm Flashlight feature)
+  const toggleTorch = async () => {
+    if (!mediaStreamRef.current) return;
+    const track = mediaStreamRef.current.getVideoTracks()[0];
+    if (!track) return;
+    try {
+      const nextState = !isTorchOn;
+      await (track as any).applyConstraints({
+        advanced: [{ torch: nextState }]
+      });
+      setIsTorchOn(nextState);
+    } catch (err) {
+      console.warn('Torch constraint error:', err);
+    }
+  };
+
+  // Switch between back/front cameras
+  const toggleCameraFacing = () => {
+    const nextMode = facingMode === 'environment' ? 'user' : 'environment';
+    setFacingMode(nextMode);
+    startCamera(nextMode);
+  };
+
+  // Dual-Engine continuous QR frame processing
   const startContinuousDetection = () => {
-    const BarcodeDetectorClass = (window as any).BarcodeDetector;
-    if (!BarcodeDetectorClass) return;
+    // 1. Try Native BarcodeDetector (Chrome, Edge, Android)
+    const hasNativeDetector = typeof window !== 'undefined' && 'BarcodeDetector' in window;
+    let nativeDetector: any = null;
+    if (hasNativeDetector) {
+      try {
+        const BarcodeDetectorClass = (window as any).BarcodeDetector;
+        nativeDetector = new BarcodeDetectorClass({
+          formats: ['qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e']
+        });
+      } catch {
+        nativeDetector = null;
+      }
+    }
 
-    const barcodeDetector = new BarcodeDetectorClass({
-      formats: ['qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a', 'upc_e']
-    });
+    // 2. Offscreen Canvas for jsQR (Universal Fallback for iPhone/iOS Safari)
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement('canvas');
+    }
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-    const detectFrame = async () => {
-      if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-        try {
-          const barcodes = await barcodeDetector.detect(videoRef.current);
-          if (barcodes && barcodes.length > 0) {
-            const rawVal = barcodes[0].rawValue;
-            if (rawVal) {
-              handleCodeFound(rawVal);
-              return; // Stop scanning once found
+    let lastScanTime = 0;
+
+    const detectFrame = async (timestamp: number) => {
+      const video = videoRef.current;
+
+      if (video && video.readyState === video.HAVE_ENOUGH_DATA) {
+        // Run detection every 80-100ms to balance performance & battery
+        if (timestamp - lastScanTime > 90) {
+          lastScanTime = timestamp;
+
+          // Attempt Engine 1: Native BarcodeDetector
+          if (nativeDetector) {
+            try {
+              const barcodes = await nativeDetector.detect(video);
+              if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                handleCodeFound(barcodes[0].rawValue);
+                return;
+              }
+            } catch {
+              // fallback to jsQR
             }
           }
-        } catch (e) {
-          // Frame read error, continue polling
+
+          // Attempt Engine 2: jsQR Fallback (Works on 100% of iPhones & WebKit browsers)
+          if (ctx && video.videoWidth > 0 && video.videoHeight > 0) {
+            try {
+              const scanWidth = Math.min(640, video.videoWidth);
+              const scanHeight = Math.min(480, (video.videoHeight * scanWidth) / video.videoWidth);
+
+              canvas.width = scanWidth;
+              canvas.height = scanHeight;
+              ctx.drawImage(video, 0, 0, scanWidth, scanHeight);
+
+              const imgData = ctx.getImageData(0, 0, scanWidth, scanHeight);
+              const qr = jsQR(imgData.data, imgData.width, imgData.height, {
+                inversionAttempts: 'dontInvert',
+              });
+
+              if (qr && qr.data) {
+                handleCodeFound(qr.data);
+                return;
+              }
+            } catch {
+              // frame drop, continue
+            }
+          }
         }
       }
+
       animationFrameRef.current = requestAnimationFrame(detectFrame);
     };
 
     animationFrameRef.current = requestAnimationFrame(detectFrame);
   };
 
+  // Handle successful QR detection
   const handleCodeFound = (code: string) => {
     stopCamera();
     setDetectedResult(code);
     setIsProcessing(true);
 
-    // Haptic feedback
+    // Play Paytm-style crisp audio confirmation chime
+    playPaytmChime();
+
+    // Haptic double vibration
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
       navigator.vibrate([60, 40, 80]);
     }
 
+    // Classify scan type
+    const trimmed = code.trim();
+    if (trimmed.startsWith('upi://') || trimmed.includes('paytm.me') || trimmed.toLowerCase().includes('paytm')) {
+      setDetectedType('paytm_upi');
+    } else if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      setDetectedType('external_url');
+    } else if (trimmed.includes('BAGRU') || trimmed.includes('SGR') || trimmed.includes('CTI')) {
+      setDetectedType('gi_tag');
+    } else {
+      setDetectedType('barcode');
+    }
+
+    // Auto-navigate after short confirmation visual
     setTimeout(() => {
       navigateToVerification(code);
-    }, 600);
+    }, 750);
   };
 
   const navigateToVerification = (code: string) => {
     const trimmed = code.trim();
     if (!trimmed) return;
 
-    // If it is a full crafttrue URL, extract path
+    // Handle full CraftTrue verification URLs
     if (trimmed.includes('/verify/')) {
       const parts = trimmed.split('/verify/');
       if (parts[1]) {
@@ -153,7 +303,7 @@ export default function ScanPage() {
       }
     }
 
-    // Pass the raw code or URL to /verify/[id]
+    // Pass code / URL to /verify/[id]
     router.push(`/verify/${encodeURIComponent(trimmed)}`);
   };
 
@@ -164,7 +314,7 @@ export default function ScanPage() {
     }
   };
 
-  // Image upload handler
+  // Image Upload handler (with jsQR fallback for iPhone & all devices)
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -173,52 +323,57 @@ export default function ScanPage() {
     setCameraError(null);
 
     try {
-      const imageBitmap = await createImageBitmap(file);
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
 
-      if (typeof window !== 'undefined' && 'BarcodeDetector' in window) {
-        const BarcodeDetectorClass = (window as any).BarcodeDetector;
-        const detector = new BarcodeDetectorClass({
-          formats: ['qr_code', 'ean_13', 'ean_8', 'code_128', 'code_39', 'upc_a']
-        });
-        const barcodes = await detector.detect(imageBitmap);
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0);
+            const imgData = ctx.getImageData(0, 0, img.width, img.height);
+            const qr = jsQR(imgData.data, imgData.width, imgData.height);
+            URL.revokeObjectURL(objectUrl);
 
-        if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
-          handleCodeFound(barcodes[0].rawValue);
-          return;
+            if (qr && qr.data) {
+              handleCodeFound(qr.data);
+              return;
+            }
+          }
+          URL.revokeObjectURL(objectUrl);
+          setCameraError('No readable QR code found in photo. Please ensure tag is well-lit and in focus, or type code below.');
+          setIsProcessing(false);
+        } catch {
+          URL.revokeObjectURL(objectUrl);
+          setCameraError('Could not process photo. Please type tag code manually below.');
+          setIsProcessing(false);
         }
-      }
+      };
 
-      // If browser doesn't have BarcodeDetector or no QR found in photo
-      setCameraError('Image uploaded, but no clear QR or barcode was detected. Please ensure the tag is well-lit and in focus, or type the code below.');
-      setIsProcessing(false);
-    } catch (err) {
-      setCameraError('Unable to process the image file. Please try typing the tag code manually.');
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        setCameraError('Could not load image file. Please try another photo or enter code manually.');
+        setIsProcessing(false);
+      };
+
+      img.src = objectUrl;
+    } catch {
+      setCameraError('Error reading uploaded image. Please enter tag code manually.');
       setIsProcessing(false);
     }
-  };
-
-  const triggerSimulatedScan = (sampleCode: string = 'BAGRU-LCD-F001') => {
-    setIsProcessing(true);
-    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(40);
-    }
-    setTimeout(() => {
-      if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-        navigator.vibrate([60, 40, 80]);
-      }
-      navigateToVerification(sampleCode);
-    }, 1000);
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10 space-y-10">
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
       {/* Hidden File Input for Tag Photo Upload */}
       <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileUpload}
         accept="image/*"
-        capture="environment"
         className="hidden"
       />
 
@@ -226,25 +381,25 @@ export default function ScanPage() {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold border border-amber-300">
           <QrCode className="w-3.5 h-3.5 text-amber-700" />
-          <span>Craft &amp; GI Authenticity Scanner • प्रामाणिकता स्कैनर</span>
+          <span>Paytm-Grade Instant QR Scanner • प्रामाणिकता स्कैनर</span>
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">
-          Scan Tag, Barcode, or Product URL
+          Scan Handloom QR Tag or Paytm Code
         </h1>
         <p className="text-sm text-stone-600 max-w-xl mx-auto leading-relaxed">
-          Scan the physical QR swing tag, e-commerce barcode, or registered product URL for any <strong>Bagru (GI No. 183)</strong> or <strong>Sanganeri (GI No. 147)</strong> textile to verify origin, artisan lineage, and forensic authenticity.
+          High-speed optical verification for <strong>Bagru (GI No. 183)</strong>, <strong>Sanganeri (GI No. 147)</strong>, e-commerce barcodes, and Paytm artisan UPI tags.
         </p>
       </div>
 
-      {/* Main Scanner Card */}
-      <div className="bg-white rounded-3xl border-2 border-amber-200/80 shadow-xl p-6 sm:p-8 space-y-6">
+      {/* Main Paytm-Style Scanner Card */}
+      <div className="bg-white rounded-3xl border-2 border-amber-200/80 shadow-xl p-4 sm:p-6 space-y-6">
         
-        {/* Scanner Viewport */}
-        <div className="relative rounded-2xl overflow-hidden bg-stone-950 aspect-16/10 sm:aspect-21/9 flex flex-col items-center justify-center p-6 text-white border-2 border-dashed border-amber-500/60">
+        {/* PAYTM-STYLE VIEWFINDER VIEWPORT */}
+        <div className="relative rounded-2xl overflow-hidden bg-stone-950 aspect-4/3 sm:aspect-16/10 flex flex-col items-center justify-center text-white border border-stone-800 shadow-inner">
           
           {/* Active Live Video Stream */}
           {isCameraActive && (
-            <div className="absolute inset-0 w-full h-full">
+            <div className="absolute inset-0 w-full h-full flex items-center justify-center">
               <video
                 ref={videoRef}
                 playsInline
@@ -252,45 +407,134 @@ export default function ScanPage() {
                 muted
                 className="w-full h-full object-cover"
               />
-              {/* Animated Laser Scanning Line */}
-              <div className="absolute inset-x-8 top-1/2 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_#f59e0b] animate-pulse" />
-              
-              {/* Live Overlay Badge */}
-              <div className="absolute top-4 left-4 bg-stone-950/80 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-amber-300 flex items-center gap-2 border border-amber-500/40">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                <span>Live Camera Active • Point at Tag</span>
+
+              {/* PAYTM-STYLE ILLUMINATED TARGETING RETICLE */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                {/* Dark Vignette Overlay outside frame */}
+                <div className="relative w-64 h-64 sm:w-72 sm:h-72">
+                  
+                  {/* Top-Left Corner Bracket */}
+                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-amber-400 rounded-tl-xl shadow-[0_0_8px_#f59e0b]" />
+                  {/* Top-Right Corner Bracket */}
+                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-amber-400 rounded-tr-xl shadow-[0_0_8px_#f59e0b]" />
+                  {/* Bottom-Left Corner Bracket */}
+                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-amber-400 rounded-bl-xl shadow-[0_0_8px_#f59e0b]" />
+                  {/* Bottom-Right Corner Bracket */}
+                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-amber-400 rounded-br-xl shadow-[0_0_8px_#f59e0b]" />
+
+                  {/* Paytm-Style Sweeping Laser Beam */}
+                  <div className="absolute inset-x-2 top-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_15px_#f59e0b] animate-[bounce_2s_infinite]" />
+
+                  {/* Center Target Indicator */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-30">
+                    <QrCode className="w-24 h-24 text-amber-300/40" />
+                  </div>
+                </div>
+
+                <p className="mt-4 px-3 py-1 rounded-full bg-stone-900/80 backdrop-blur-md text-amber-200 text-[11px] font-semibold border border-amber-500/30">
+                  Align QR Code within the frame
+                </p>
               </div>
 
-              {/* Stop Camera Button */}
-              <button
-                type="button"
-                onClick={stopCamera}
-                className="absolute top-4 right-4 bg-stone-900/80 hover:bg-stone-900 text-stone-200 px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-stone-700"
-              >
-                <VideoOff className="w-3.5 h-3.5" />
-                <span>Stop</span>
-              </button>
+              {/* Top Bar inside Viewfinder */}
+              <div className="absolute top-3 inset-x-3 flex items-center justify-between pointer-events-auto">
+                <div className="bg-stone-900/85 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-bold text-amber-300 flex items-center gap-1.5 border border-amber-500/40">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span>Dual-Engine Live Scan (iPhone &amp; Android)</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={stopCamera}
+                  className="bg-stone-900/90 hover:bg-stone-800 text-stone-200 px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1 border border-stone-700 shadow-sm"
+                >
+                  <VideoOff className="w-3.5 h-3.5" />
+                  <span>Stop</span>
+                </button>
+              </div>
+
+              {/* PAYTM-STYLE IN-CAMERA TOOLBAR CONTROLS */}
+              <div className="absolute bottom-3 inset-x-4 flex items-center justify-center gap-3 pointer-events-auto">
+                {/* Torch Toggle */}
+                {torchSupported && (
+                  <button
+                    type="button"
+                    onClick={toggleTorch}
+                    className={`p-2.5 rounded-full backdrop-blur-md border text-xs font-semibold transition flex items-center gap-1.5 shadow-md ${
+                      isTorchOn
+                        ? 'bg-amber-400 text-stone-950 border-amber-300 shadow-amber-500/40'
+                        : 'bg-stone-900/80 hover:bg-stone-800 text-stone-200 border-stone-700'
+                    }`}
+                    title="Toggle Flashlight"
+                  >
+                    {isTorchOn ? <Zap className="w-4 h-4 fill-current" /> : <ZapOff className="w-4 h-4" />}
+                    <span className="text-[10px] hidden sm:inline">{isTorchOn ? 'Torch On' : 'Torch'}</span>
+                  </button>
+                )}
+
+                {/* Switch Camera (Front/Back) */}
+                <button
+                  type="button"
+                  onClick={toggleCameraFacing}
+                  className="p-2.5 rounded-full bg-stone-900/80 hover:bg-stone-800 text-stone-200 border border-stone-700 backdrop-blur-md transition flex items-center gap-1.5 shadow-md"
+                  title="Flip Camera"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span className="text-[10px] hidden sm:inline">Flip</span>
+                </button>
+
+                {/* Sound Toggle */}
+                <button
+                  type="button"
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className={`p-2.5 rounded-full backdrop-blur-md border text-xs transition flex items-center gap-1.5 shadow-md ${
+                    soundEnabled
+                      ? 'bg-stone-900/80 text-amber-300 border-amber-500/40'
+                      : 'bg-stone-900/80 text-stone-400 border-stone-700'
+                  }`}
+                  title="Audio Confirmation Chime"
+                >
+                  {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+                  <span className="text-[10px] hidden sm:inline">Sound</span>
+                </button>
+
+                {/* Upload from Gallery button */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="p-2.5 rounded-full bg-stone-900/80 hover:bg-stone-800 text-amber-200 border border-amber-500/30 backdrop-blur-md transition flex items-center gap-1.5 shadow-md"
+                  title="Scan from Gallery Photo"
+                >
+                  <ImageIcon className="w-4 h-4" />
+                  <span className="text-[10px] hidden sm:inline">Photos</span>
+                </button>
+              </div>
             </div>
           )}
 
           {/* Processing / Result Indicator */}
           {isProcessing ? (
-            <div className="relative z-10 text-center space-y-4">
+            <div className="relative z-10 text-center space-y-4 p-6">
               <div className="w-16 h-16 rounded-full border-4 border-amber-400 border-t-transparent animate-spin mx-auto shadow-lg" />
-              <p className="font-mono text-sm text-amber-300 font-bold">
-                {detectedResult ? `Tag Detected: ${detectedResult}` : 'Analyzing Tag & Querying Registry...'}
-              </p>
-              <p className="text-xs text-stone-300">Retrieving 7-layer craft evidence &amp; internet records</p>
+              <div className="space-y-1">
+                <span className="inline-block px-3 py-0.5 rounded-full bg-amber-400 text-stone-950 text-xs font-bold shadow-xs">
+                  {detectedType === 'paytm_upi' ? 'Paytm / UPI Merchant Code Detected' : 'Verified QR Captured'}
+                </span>
+                <p className="font-mono text-sm text-amber-200 font-bold truncate max-w-xs mx-auto">
+                  {detectedResult}
+                </p>
+                <p className="text-xs text-stone-300">Retrieving GI Registry &amp; Blockchain Lineage...</p>
+              </div>
             </div>
           ) : !isCameraActive && (
-            <div className="relative z-10 text-center space-y-4 max-w-md">
-              <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
+            <div className="relative z-10 text-center space-y-4 max-w-md p-6">
+              <div className="w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400 shadow-md">
                 <Camera className="w-8 h-8" />
               </div>
               <div className="space-y-1">
-                <p className="font-bold text-base text-white">Point Camera or Upload Physical Tag</p>
+                <p className="font-bold text-base text-white">Tap to Open Paytm-Style Scanner</p>
                 <p className="text-xs text-stone-300 leading-relaxed">
-                  Point at any QR code, garment swing tag, or e-commerce packaging label.
+                  Fast camera recognition with instant chime feedback for GI tags, barcodes, and Paytm UPI codes.
                 </p>
               </div>
 
@@ -298,17 +542,17 @@ export default function ScanPage() {
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={startCamera}
-                  className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition flex items-center gap-2"
+                  onClick={() => startCamera()}
+                  className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold text-xs shadow-md transition flex items-center gap-2"
                 >
                   <Camera className="w-4 h-4" />
-                  <span>Start Live Camera</span>
+                  <span>Start Camera Scanner</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-5 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-amber-200 border border-amber-500/30 font-bold text-xs shadow-sm transition flex items-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 active:scale-95 text-amber-200 border border-amber-500/30 font-bold text-xs shadow-sm transition flex items-center gap-2"
                 >
                   <Upload className="w-4 h-4" />
                   <span>Upload Tag Photo</span>
@@ -316,15 +560,9 @@ export default function ScanPage() {
               </div>
             </div>
           )}
-
-          {/* Optical Targeting Crosshairs */}
-          <div className="absolute top-4 left-4 w-7 h-7 border-t-2 border-l-2 border-amber-400 pointer-events-none" />
-          <div className="absolute top-4 right-4 w-7 h-7 border-t-2 border-r-2 border-amber-400 pointer-events-none" />
-          <div className="absolute bottom-4 left-4 w-7 h-7 border-b-2 border-l-2 border-amber-400 pointer-events-none" />
-          <div className="absolute bottom-4 right-4 w-7 h-7 border-b-2 border-r-2 border-amber-400 pointer-events-none" />
         </div>
 
-        {/* Error Notification (if any) */}
+        {/* Error Notification */}
         {cameraError && (
           <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5">
             <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
@@ -336,11 +574,11 @@ export default function ScanPage() {
         <div className="relative flex items-center justify-center">
           <div className="border-t border-stone-200 w-full" />
           <span className="bg-white px-3 text-xs uppercase tracking-wider text-stone-500 font-bold absolute">
-            or search tag, barcode, or web link
+            or search tag, barcode, or paytm / web link
           </span>
         </div>
 
-        {/* Manual Code / URL Input Form */}
+        {/* Manual Code / URL / Paytm UPI Input Form */}
         <form onSubmit={handleSearchSubmit} className="space-y-3">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
@@ -349,25 +587,25 @@ export default function ScanPage() {
                 type="text"
                 value={productCodeInput}
                 onChange={(e) => setProductCodeInput(e.target.value)}
-                placeholder="Paste product tag ID, barcode, or internet link (e.g. BAGRU-LCD-F001 or https://...)"
+                placeholder="Paste GI Tag ID, Paytm UPI link, or Barcode (e.g. BAGRU-LCD-F001 or paytm.me/...)"
                 className="w-full pl-10 pr-4 py-3 bg-stone-50 border border-stone-300 rounded-xl text-sm font-sans focus:outline-none focus:ring-2 focus:ring-amber-700/40 focus:bg-white"
               />
             </div>
             <button
               type="submit"
-              className="px-7 py-3 bg-stone-900 hover:bg-stone-800 text-amber-300 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm shrink-0"
+              className="px-7 py-3 bg-stone-900 hover:bg-stone-800 active:scale-95 text-amber-300 rounded-xl font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm shrink-0"
             >
               <span>Verify &amp; Fetch Info</span>
               <ArrowRight className="w-4 h-4 text-amber-400" />
             </button>
           </div>
           <p className="text-[11px] text-stone-500 italic">
-            Supports official CraftTrue tags, external merchant URLs, barcodes (EAN-13, UPC), and GI Application Numbers (GI-183, GI-147).
+            Supports official CraftTrue tags, Paytm UPI strings, external merchant URLs, and GI Registry numbers (GI-183, GI-147).
           </p>
         </form>
       </div>
 
-      {/* INSTANT DEMO TAGS & SAMPLE TESTING */}
+      {/* SAMPLE REGISTERED TAGS & DEMO TESTING */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -390,8 +628,11 @@ export default function ScanPage() {
           {/* Preset A: Fully Verified Bagru */}
           <button
             type="button"
-            onClick={() => navigateToVerification('BAGRU-LCD-F001')}
-            className="text-left p-5 rounded-2xl border border-emerald-300 bg-emerald-50/60 hover:bg-emerald-100/70 transition space-y-2 group shadow-xs"
+            onClick={() => {
+              playPaytmChime();
+              navigateToVerification('BAGRU-LCD-F001');
+            }}
+            className="text-left p-5 rounded-2xl border border-emerald-300 bg-emerald-50/60 hover:bg-emerald-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-700 text-white flex items-center gap-1">
@@ -404,15 +645,18 @@ export default function ScanPage() {
             </div>
             <h4 className="font-bold text-sm text-stone-900">Bagru Classic Fadat Hand-Block Dupatta</h4>
             <p className="text-xs text-stone-600">
-              Lalchand &apos;Chippa&apos; Derawala (National Award 1999). Seasoned Rorda wooden blocks, Harda cream ground, natural syahi &amp; madder red.
+              Master Lalchand &apos;Chippa&apos; Derawala (National Award 1999). Natural harda cream ground, natural syahi &amp; madder red.
             </p>
           </button>
 
           {/* Preset B: Fully Verified Sanganer */}
           <button
             type="button"
-            onClick={() => navigateToVerification('SGR-BBU-F001')}
-            className="text-left p-5 rounded-2xl border border-sky-300 bg-sky-50/60 hover:bg-sky-100/70 transition space-y-2 group shadow-xs"
+            onClick={() => {
+              playPaytmChime();
+              navigateToVerification('SGR-BBU-F001');
+            }}
+            className="text-left p-5 rounded-2xl border border-sky-300 bg-sky-50/60 hover:bg-sky-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-700 text-white flex items-center gap-1">
@@ -425,15 +669,18 @@ export default function ScanPage() {
             </div>
             <h4 className="font-bold text-sm text-stone-900">Sanganeri Fine Floral Hand-Block Mulmul Saree</h4>
             <p className="text-xs text-stone-600">
-              Brij Ballabh Udaiwal (National Award 1991, Pehchan ID NRJPC241207). Fine boota &amp; bootie on pristine white river-washed cotton mulmul.
+              Master Brij Ballabh Udaiwal (National Award 1991, Pehchan ID NRJPC241208). Fine boota &amp; bootie on river-washed mulmul.
             </p>
           </button>
 
           {/* Preset C: Confirmed Craftwashing Misrepresentation */}
           <button
             type="button"
-            onClick={() => navigateToVerification('CTI-MIS-000305')}
-            className="text-left p-5 rounded-2xl border border-rose-300 bg-rose-50/60 hover:bg-rose-100/70 transition space-y-2 group shadow-xs"
+            onClick={() => {
+              playPaytmChime();
+              navigateToVerification('CTI-MIS-000305');
+            }}
+            className="text-left p-5 rounded-2xl border border-rose-300 bg-rose-50/60 hover:bg-rose-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-700 text-white flex items-center gap-1">
@@ -446,50 +693,31 @@ export default function ScanPage() {
             </div>
             <h4 className="font-bold text-sm text-stone-900">Industrial Screen Print Sold as &quot;Bagru Dabu&quot;</h4>
             <p className="text-xs text-stone-600">
-              Commercial fraud detection: Flatbed rotary screen print using acrylic pigments, zero reverse strike-through, 300% markup on poly-cotton.
+              Commercial fraud detection: Rotary screen print using acrylic pigments, zero reverse strike-through, 300% markup on poly-cotton.
             </p>
           </button>
 
-          {/* Preset D: Cloned QR Anomaly Alert */}
+          {/* Preset D: Paytm / UPI QR Code Test */}
           <button
             type="button"
-            onClick={() => navigateToVerification('CTI-DUP-000412')}
-            className="text-left p-5 rounded-2xl border border-orange-300 bg-orange-50/60 hover:bg-orange-100/70 transition space-y-2 group shadow-xs"
+            onClick={() => {
+              playPaytmChime();
+              navigateToVerification('upi://pay?pa=lalchand.derawala@paytm&pn=Master%20Lalchand%20Chippa&mc=5999&tid=BAGRU183');
+            }}
+            className="text-left p-5 rounded-2xl border border-cyan-300 bg-cyan-50/60 hover:bg-cyan-100/70 active:scale-[0.99] transition space-y-2 group shadow-xs"
           >
             <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-700 text-white flex items-center gap-1">
-                <ShieldAlert className="w-3 h-3" />
-                SECURITY DUPLICATION ALERT
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-700 text-white flex items-center gap-1">
+                <Sparkles className="w-3 h-3" />
+                PAYTM / UPI ARTISAN QR
               </span>
-              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-orange-900">
-                CTI-DUP-000412 →
-              </span>
-            </div>
-            <h4 className="font-bold text-sm text-stone-900">Cloned QR Swing Tag Anomaly</h4>
-            <p className="text-xs text-stone-600">
-              Anti-duplication security: Triggers audit quarantine when identical QR tag ID is scanned across multiple locations within 15 minutes.
-            </p>
-          </button>
-
-          {/* Preset E: External Internet Web Link Example */}
-          <button
-            type="button"
-            onClick={() => navigateToVerification('https://goswadeshi.in/products/handblock-bagru-dabu-cotton-dupatta')}
-            className="text-left p-5 rounded-2xl border border-blue-300 bg-blue-50/60 hover:bg-blue-100/70 transition space-y-2 group shadow-xs md:col-span-2"
-          >
-            <div className="flex items-center justify-between">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-700 text-white flex items-center gap-1">
-                <Globe className="w-3 h-3" />
-                EXTERNAL INTERNET URL SCAN TEST
-              </span>
-              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-blue-900 flex items-center gap-1">
-                <span>Test Web Lookup</span>
-                <ExternalLink className="w-3 h-3" />
+              <span className="font-mono text-xs text-stone-500 font-bold group-hover:text-cyan-900">
+                Test Paytm UPI →
               </span>
             </div>
-            <h4 className="font-bold text-sm text-stone-900">Test External E-Commerce / Merchant Web Link</h4>
+            <h4 className="font-bold text-sm text-stone-900">Paytm Artisan Merchant Soundbox QR</h4>
             <p className="text-xs text-stone-600">
-              Test how the system fetches and verifies registered product links from external sites (GoSwadeshi, Amazon Karigar, Fabindia, ONDC, GI Registry).
+              Simulate scanning a Paytm merchant QR tag from an artisan workshop in Laxmi Nath Chowk, Bagru.
             </p>
           </button>
 

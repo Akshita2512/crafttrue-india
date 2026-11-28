@@ -32,7 +32,9 @@ import {
   Building,
   Send,
   Eye,
-  CheckCircle
+  CheckCircle,
+  ArrowRight,
+  BookOpenCheck
 } from 'lucide-react';
 
 export default function VerificationPage() {
@@ -102,6 +104,105 @@ export default function VerificationPage() {
     e.preventDefault();
     setReportSubmitted(true);
   };
+
+  // =========================================================================
+  // VIEW: SCANNED PAYTM / UPI MERCHANT QR CODE
+  // =========================================================================
+  const isUpi = decodedId.startsWith('upi://') || decodedId.toLowerCase().includes('paytm');
+  if (isUpi) {
+    let merchantName = 'Master Artisan Direct Account';
+    let vpa = decodedId;
+    let tid = '';
+    try {
+      const matchPa = decodedId.match(/pa=([^&]+)/);
+      const matchPn = decodedId.match(/pn=([^&]+)/);
+      const matchTid = decodedId.match(/tid=([^&]+)/);
+      if (matchPa) vpa = decodeURIComponent(matchPa[1]);
+      if (matchPn) merchantName = decodeURIComponent(matchPn[1]);
+      if (matchTid) tid = decodeURIComponent(matchTid[1]);
+    } catch {
+      // ignore
+    }
+
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10 space-y-8">
+        <Link href="/scan" className="inline-flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-900 font-semibold">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Scanner</span>
+        </Link>
+
+        <div className="bg-white rounded-3xl border-2 border-cyan-300 shadow-xl p-6 sm:p-8 space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-100 text-cyan-900 text-xs font-bold border border-cyan-300">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-700" />
+              <span>Paytm / UPI Artisan Merchant QR Verified • सीधा कारीगर खाता</span>
+            </div>
+            <span className="text-xs font-mono font-bold text-stone-600 bg-stone-100 px-3 py-1 rounded-full border">
+              VPA: {vpa}
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900">
+              {merchantName}
+            </h1>
+            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              This is an official Paytm / UPI payment QR code linked to a registered Chhipa hand-block artisan workshop in Rajasthan. Scanning enables 100% direct fair payment without middleman commission deductions.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-cyan-50/60 border border-cyan-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-cyan-800">Verified UPI Address</span>
+              <p className="font-mono text-sm font-bold text-cyan-950 select-all">{vpa}</p>
+              {tid && <p className="text-[11px] text-stone-500 font-mono">Workshop Reference: {tid}</p>}
+            </div>
+            <a
+              href={decodedId.startsWith('upi://') ? decodedId : `upi://pay?pa=${vpa}&pn=${encodeURIComponent(merchantName)}`}
+              className="px-6 py-3 rounded-xl bg-cyan-700 hover:bg-cyan-800 active:scale-95 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition shrink-0 w-full sm:w-auto"
+            >
+              <span>Pay Artisan Directly on Paytm / UPI</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <Link
+              href="/artisans"
+              className="p-4 rounded-xl border border-stone-200 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 transition space-y-1 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900 group-hover:text-amber-900 flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5 text-amber-700" />
+                  <span>Verify Artisan Pehchan &amp; GI Registration</span>
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-700" />
+              </div>
+              <p className="text-[11px] text-stone-500">
+                Check government Pehchan ID card and Ministry of Textiles authorized user certificate.
+              </p>
+            </Link>
+
+            <Link
+              href="/authenticity-guide"
+              className="p-4 rounded-xl border border-stone-200 bg-stone-50 hover:bg-amber-50 hover:border-amber-300 transition space-y-1 group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900 group-hover:text-amber-900 flex items-center gap-1.5">
+                  <BookOpenCheck className="w-3.5 h-3.5 text-amber-700" />
+                  <span>Perform In-Hand Fabric Field Test</span>
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 text-stone-400 group-hover:text-amber-700" />
+              </div>
+              <p className="text-[11px] text-stone-500">
+                Verify reverse strike-through, natural indigo smell, and mud-resist block alignment.
+              </p>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // =========================================================================
   // VIEW 1: SCANNED EXTERNAL URL / WEB LINK DETECTED
